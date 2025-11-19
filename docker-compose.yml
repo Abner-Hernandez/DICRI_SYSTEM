@@ -1,0 +1,46 @@
+services:
+  # ============================================
+  # BASE DE DATOS - SQL SERVER
+  # ============================================
+  database:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    container_name: dicri_database
+    env_file:
+      - .env
+    environment:
+      - ACCEPT_EULA=${DB_EULA}
+      - SA_PASSWORD=${DB_SA_PASSWORD}
+      - MSSQL_PID=${DB_MSSQL_PID}
+      - DB_USER_APP=${DB_USER_APP}
+      - DB_PASSWORD_APP=${DB_PASSWORD_APP}
+      - DB_USER=${DB_USER_ADMIN} 
+      - DB_NAME=${DB_NAME} 
+      - DB_HOST=${DB_HOST_INIT}
+      - MSSQL_AUTHENTICATION_MODE=${DB_AUTHENTICATION_MODE}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+      - ./database/scripts:/docker-entrypoint-initdb.d
+      - ./database/init-db.sh:/init-db.sh
+    networks:
+      - dicri_network
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", 
+             "-S", "${DB_HOST}",
+             "-U", "${DB_USER_ADMIN}",
+             "-P", "${DB_SA_PASSWORD}", 
+             "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  sqlserver_data:
+    driver: local
+
+networks:
+  dicri_network:
+    driver: bridge

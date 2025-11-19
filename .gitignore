@@ -1,0 +1,39 @@
+# Dependencias y artefactos de compilación
+
+# Dependencias de paquetes
+node_modules
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+pnpm-debug.log*
+.npm
+
+# Directorios de compilación/transpilación
+# Excluidos globalmente para cualquier subproyecto
+dist
+build
+out
+.next
+.nuxt
+.svelte-kit
+
+# IDE y Editores de Código (Aplica a cualquier subcarpeta .vscode)
+.vscode/*
+!/.vscode/settings.json
+!/.vscode/tasks.json
+!/.vscode/launch.json
+!/.vscode/extensions.json
+.history/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+
+# Archivos de Entorno y Seguridad
+# Aplica a cualquier lugar
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets/
