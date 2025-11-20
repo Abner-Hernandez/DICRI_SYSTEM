@@ -3,13 +3,16 @@ import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import AppRouter from './routers/appRouter';
 import './styles/styles.scss'
+import UsuarioProvider from './provider/usuarioProvider';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <AppRouter />
+    <UsuarioProvider>
+      <AppRouter />
+    </UsuarioProvider>
   </React.StrictMode>
 );
 

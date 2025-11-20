@@ -25,9 +25,9 @@ const UsuarioProvider = ({ children }: { children: React.ReactNode }) => {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ 
-                        email: action.correoElectronico, 
-                        password: action.password 
-                    }),
+                        email: action.correoElectronico,
+                        password: action.password
+                }),
                 });
 
                 if (!response.ok) {
