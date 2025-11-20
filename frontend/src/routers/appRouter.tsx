@@ -16,7 +16,6 @@ const ComponentMap = {
     'NuevoExpediente': NuevoExpediente,
     'DetalleExpediente': DetalleExpediente,
     'Login': Login,
-    // Agrega aquí otros componentes dinámicos
 };
 
 // --- Tipos Agregados ---
@@ -27,10 +26,9 @@ interface ProtectedRouteProps {
     element: ComponentType;
     isConnected: boolean;
     path: string;
-    userRole: string; // Recibe el nombre del rol (ej: 'Administrador')
+    userRole: string;
 }
 
-// --- Componente de Ruta Protegida ---
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
     element: Component, 
     isConnected, 
@@ -39,11 +37,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     if (!isConnected) {
         return <Navigate to="/ingreso" replace />;
     }
-    // Pasa el userRole al componente de la página
     return <Component userRole={userRole} />; 
 };
 
-// --- Componente Principal del Router ---
 const AppRouter = () => {
     const { state } = useContext(UsuarioContext);
 
@@ -51,22 +47,20 @@ const AppRouter = () => {
         let routes: JSX.Element[] = [];
 
         menu.forEach((item) => {
-            // Verifica que el ítem tenga ruta y un componente definido por la BD
             if (item.ruta && item.componente) {
                 const Component = ComponentMap[item.componente as keyof typeof ComponentMap];
                 
                 if (Component) {
                     routes.push(
                         <Route 
-                            key={item.id} // Asume que ItemMenu tiene 'id' para la key
+                            key={item.id}
                             path={item.ruta} 
                             element={
                                 <ProtectedRoute 
                                     element={Component} 
                                     isConnected={state.conectado}
                                     path={item.ruta}
-                                    // CORRECCIÓN: Usar state.rol_nombre para la propiedad userRole
-                                    userRole={state.rol || 'Técnico'} 
+                                    userRole={state.rol || 'Administrador'} 
                                 />
                             } 
                         />
@@ -74,7 +68,6 @@ const AppRouter = () => {
                 } 
             }
 
-            // Llamada recursiva para sub-ítems
             if (item.items && item.items.length > 0) {
                 routes = routes.concat(generateRoutes(item.items));
             }
@@ -83,7 +76,6 @@ const AppRouter = () => {
         return routes;
     };
 
-    // La propiedad 'menuItems' del estado del usuario debe contener un array de ItemMenu
     const dynamicRoutes = state.menuItems ? generateRoutes(state.menuItems) : [];
 
     return (
@@ -103,6 +95,22 @@ const AppRouter = () => {
                     <Route 
                         path="*" 
                         element={<Navigate to={state.conectado ? "/inicio" : "/ingreso"} />} 
+                    />
+                    <Route 
+                        path="/expedientes/nuevo" 
+                        element={
+                            state.conectado ? 
+                            <NuevoExpediente /> : 
+                            <Navigate to="/ingreso" />
+                        } 
+                    />
+                    <Route 
+                        path="/expedientes/:id" 
+                        element={
+                            state.conectado ? 
+                            <DetalleExpediente /> : 
+                            <Navigate to="/ingreso" />
+                        } 
                     />
                 </Routes>
             </IdleTimerWrapper>
