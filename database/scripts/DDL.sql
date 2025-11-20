@@ -59,7 +59,8 @@ CREATE TABLE [expediente] (
   [id_estado] int NOT NULL,
   [justificacion_rechazo] text,
   [fecha_aprobacion] datetime,
-  [id_usuario_aprobacion] int
+  [id_usuario_aprobacion] int,
+  [fecha_modificacion] datetime
 )
 GO
 

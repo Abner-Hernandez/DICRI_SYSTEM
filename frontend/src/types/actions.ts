@@ -6,7 +6,7 @@ export type ActionType =
     | { type: 'conectarse'; correoElectronico: string; password: string; }
     | { type: 'desconectarse' }
     | { type: 'actualizar_usuario', payload: Usuario } 
-    | { type: 'iniciar_sesion_exitoso', payload: Usuario }
+    | { type: 'iniciar_sesion_exitoso', payload: { usuario: Usuario; token: string } }
     | { 
         type: 'crear_usuario', 
         nombre: string, 

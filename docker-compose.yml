@@ -75,7 +75,7 @@ services:
     container_name: dicri_frontend
     environment:
       - CHOKIDAR_USEPOLLING=true
-      - REACT_APP_API_URL=http://${BACKEND_URL}${API_PORT}
+      - REACT_APP_API_URL=http://${BACKEND_URL}:${API_PORT}
     ports:
       - "80:80"
     volumes:
