@@ -633,3 +633,148 @@ BEGIN
     FROM inserted i;
 END;
 GO
+
+-- Menús en base a roles y permisos
+
+USE DICRI_DB;
+GO
+
+CREATE TABLE [opcion_menu] (
+  [id_opcion] int PRIMARY KEY IDENTITY(1, 1),
+  [nombre] varchar(100) NOT NULL,
+  [ruta] varchar(200),
+  [icono] varchar(50),
+  [id_opcion_padre] int,
+  [orden] int DEFAULT 0,
+  [activo] bit DEFAULT 1,
+  [requiere_permiso] bit DEFAULT 1,
+  CONSTRAINT FK_opcion_menu_padre FOREIGN KEY ([id_opcion_padre]) REFERENCES [opcion_menu]([id_opcion])
+)
+GO
+
+CREATE TABLE [permiso_opcion_menu] (
+  [id_permiso] int NOT NULL,
+  [id_opcion] int NOT NULL,
+  PRIMARY KEY ([id_permiso], [id_opcion]),
+  CONSTRAINT FK_permiso_opcion_permiso FOREIGN KEY ([id_permiso]) REFERENCES [permiso]([id_permiso]),
+  CONSTRAINT FK_permiso_opcion_menu FOREIGN KEY ([id_opcion]) REFERENCES [opcion_menu]([id_opcion])
+)
+GO
+
+CREATE INDEX IDX_opcion_menu_padre ON opcion_menu(id_opcion_padre)
+GO
+
+CREATE INDEX IDX_opcion_menu_activo ON opcion_menu(activo)
+GO
+
+CREATE PROCEDURE sp_obtener_menu_usuario
+    @id_usuario INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    WITH MenuRecursivo AS (
+        SELECT 
+            om.id_opcion,
+            om.nombre,
+            om.ruta,
+            om.icono,
+            om.id_opcion_padre,
+            om.orden,
+            om.requiere_permiso,
+            0 AS nivel
+        FROM opcion_menu om
+        WHERE om.activo = 1 
+          AND om.id_opcion_padre IS NULL
+          AND (
+              om.requiere_permiso = 0 
+              OR EXISTS (
+                  SELECT 1 
+                  FROM usuario u
+                  INNER JOIN rol_permiso rp ON u.id_rol = rp.id_rol
+                  INNER JOIN permiso_opcion_menu pom ON rp.id_permiso = pom.id_permiso
+                  WHERE u.id_usuario = @id_usuario 
+                    AND pom.id_opcion = om.id_opcion
+              )
+          )
+        
+        UNION ALL
+        
+        SELECT 
+            om.id_opcion,
+            om.nombre,
+            om.ruta,
+            om.icono,
+            om.id_opcion_padre,
+            om.orden,
+            om.requiere_permiso,
+            mr.nivel + 1
+        FROM opcion_menu om
+        INNER JOIN MenuRecursivo mr ON om.id_opcion_padre = mr.id_opcion
+        WHERE om.activo = 1
+          AND (
+              om.requiere_permiso = 0
+              OR EXISTS (
+                  SELECT 1 
+                  FROM usuario u
+                  INNER JOIN rol_permiso rp ON u.id_rol = rp.id_rol
+                  INNER JOIN permiso_opcion_menu pom ON rp.id_permiso = pom.id_permiso
+                  WHERE u.id_usuario = @id_usuario 
+                    AND pom.id_opcion = om.id_opcion
+              )
+          )
+    )
+    SELECT 
+        id_opcion,
+        nombre,
+        ruta,
+        icono,
+        id_opcion_padre,
+        orden,
+        nivel
+    FROM MenuRecursivo
+    ORDER BY nivel, orden, nombre;
+END;
+GO
+
+CREATE PROCEDURE sp_verificar_permiso_usuario
+    @id_usuario INT,
+    @nombre_permiso VARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT CASE 
+        WHEN EXISTS (
+            SELECT 1 
+            FROM usuario u
+            INNER JOIN rol_permiso rp ON u.id_rol = rp.id_rol
+            INNER JOIN permiso p ON rp.id_permiso = p.id_permiso
+            WHERE u.id_usuario = @id_usuario 
+              AND p.nombre = @nombre_permiso
+              AND u.activo = 1
+        ) THEN 1
+        ELSE 0
+    END AS tiene_permiso;
+END;
+GO
+
+CREATE PROCEDURE sp_obtener_permisos_usuario
+    @id_usuario INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT DISTINCT
+        p.id_permiso,
+        p.nombre,
+        p.descripcion,
+        p.modulo
+    FROM usuario u
+    INNER JOIN rol_permiso rp ON u.id_rol = rp.id_rol
+    INNER JOIN permiso p ON rp.id_permiso = p.id_permiso
+    WHERE u.id_usuario = @id_usuario
+      AND u.activo = 1
+    ORDER BY p.modulo, p.nombre;
+END;
+GO

@@ -13,4 +13,4 @@ COPY . .
 
 EXPOSE $FRONTEND_PORT
 
-CMD ["npm", "start"]
+CMD ["npm", "start -- --reset-cache"]

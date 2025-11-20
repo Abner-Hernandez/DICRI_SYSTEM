@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from '../componentes/login';
 import CrearUsuario from '../componentes/crearUsuario';
 import UsuarioContext from '../context/usuarioContext';
-import MenuAtel from '../Navbar/menuAtel';
+import Menu from '../navbar/menu';
 import IdleTimerWrapper from '../componentes/IdleTimerWrapper';
 
 const AppRouter = () => {
@@ -12,7 +12,7 @@ const AppRouter = () => {
     return (
         <BrowserRouter>
             <IdleTimerWrapper> 
-                {state.conectado && <MenuAtel />}
+                {state.conectado && <Menu />}
                 
                 <Routes>
                     <Route path="/ingreso" element={<Login />} />

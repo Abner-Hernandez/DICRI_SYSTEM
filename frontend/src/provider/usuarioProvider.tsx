@@ -36,6 +36,8 @@ function UsuarioProvider({ children }: { children: React.ReactNode }) {
                     conectado: true,
                     activo: true,
                 };
+
+                localStorage.setItem('token', data.token);
                 
                 defaultDispatch({ 
                     type: 'iniciar_sesion_exitoso', 

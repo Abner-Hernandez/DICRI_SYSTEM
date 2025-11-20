@@ -7,6 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 const expedienteRoutes = require('./routes/expedienteRoutes');
 const indicioRoutes = require('./routes/indicioRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
+const menuRouters = require('./routes/menuRouters');
 
 const { errorHandler } = require('./middlewares/errorHandler');
 
@@ -30,6 +31,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/expedientes', expedienteRoutes);
 app.use('/api/indicios', indicioRoutes);
 app.use('/api/usuarios', usuarioRoutes);
+app.use('/api/menu', menuRouters);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Endpoint no encontrado' });
