@@ -47,10 +47,6 @@ interface MenuItemMUIProps {
     setVisibleMenu: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-interface UsuarioState {
-    conectado: boolean;
-}
-
 interface UsuarioContextValue {
     state: Usuario;
     dispatch: React.Dispatch<ActionType>;
@@ -134,11 +130,24 @@ const MenuAtel: React.FC = () => {
     }
 
     useEffect(() => {
+        const userRole = usuario.state?.rol_nombre;
+        
         const menus: ItemMenuData[] = [
             {
                 nombre: "Inicio",
                 incluyeEnMenu: true
             },
+            {
+                nombre: "Expedientes",
+                incluyeEnMenu: true
+            },
+            ...(userRole === 'Coordinador' ? [{
+                nombre: "Revisión",
+                incluyeEnMenu: false,
+                items: [
+                    { nombre: "Expedientes Pendientes", incluyeEnMenu: true }
+                ]
+            }] : []),
             {
                 nombre: "Configuración",
                 incluyeEnMenu: false,
@@ -149,7 +158,7 @@ const MenuAtel: React.FC = () => {
             },
         ];
         setItems(obtenerMenus(menus));
-    }, []);
+    }, [usuario.state?.rol_nombre]);
 
     const handleLogout = async () => {
         await usuario.dispatch({ type: "desconectarse" });
@@ -197,7 +206,7 @@ const MenuAtel: React.FC = () => {
                     </IconButton>
 
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Mi Aplicación
+                        DICRI - Sistema de Evidencias
                     </Typography>
 
                     <MuiButton color="inherit" onClick={handleLogout} startIcon={<LogoutIcon />}>

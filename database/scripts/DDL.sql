@@ -59,7 +59,8 @@ CREATE TABLE [expediente] (
   [id_estado] int NOT NULL,
   [justificacion_rechazo] text,
   [fecha_aprobacion] datetime,
-  [id_usuario_aprobacion] int
+  [id_usuario_aprobacion] int,
+  [fecha_modificacion] datetime
 )
 GO
 
@@ -633,3 +634,27 @@ BEGIN
     FROM inserted i;
 END;
 GO
+
+-- Otorgar permisos al usuario dicri_backend
+GRANT EXECUTE ON sp_registrar_auditoria TO dicri_backend;
+GRANT EXECUTE ON sp_crear_expediente TO dicri_backend;
+GRANT EXECUTE ON sp_registrar_indicio TO dicri_backend;
+GRANT EXECUTE ON sp_enviar_a_revision TO dicri_backend;
+GRANT EXECUTE ON sp_aprobar_expediente TO dicri_backend;
+GRANT EXECUTE ON sp_rechazar_expediente TO dicri_backend;
+
+-- Otorgar permisos CRUD en todas las tablas necesarias
+GRANT SELECT, INSERT, UPDATE, DELETE ON usuario TO dicri_backend;
+GRANT SELECT, INSERT, UPDATE, DELETE ON rol TO dicri_backend;
+GRANT SELECT, INSERT, UPDATE, DELETE ON permiso TO dicri_backend;
+GRANT SELECT, INSERT, UPDATE, DELETE ON rol_permiso TO dicri_backend;
+GRANT SELECT, INSERT, UPDATE, DELETE ON estado_expediente TO dicri_backend;
+GRANT SELECT, INSERT, UPDATE, DELETE ON expediente TO dicri_backend;
+GRANT SELECT, INSERT, UPDATE, DELETE ON tipo_indicio TO dicri_backend;
+GRANT SELECT, INSERT, UPDATE, DELETE ON indicio TO dicri_backend;
+GRANT SELECT, INSERT, UPDATE, DELETE ON historial_expediente TO dicri_backend;
+GRANT SELECT, INSERT, UPDATE, DELETE ON tecnico_expediente TO dicri_backend;
+GRANT SELECT, INSERT, UPDATE, DELETE ON adjunto_indicio TO dicri_backend;
+GRANT SELECT, INSERT, UPDATE, DELETE ON auditoria TO dicri_backend;
+
+PRINT 'Permisos otorgados correctamente al usuario dicri_backend';

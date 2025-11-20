@@ -1,11 +1,14 @@
 import Usuario from "../clases/usuario";
 import { ActionType, UsuarioReducer } from "../types/actions";
 
-const guardarSesion = (usuario: Usuario) => {
+const guardarSesion = (usuario: Usuario, token?: string) => {
     sessionStorage.setItem("nombre", usuario.nombre);
     sessionStorage.setItem("email", usuario.email); 
     sessionStorage.setItem("conectado", usuario.conectado.toString());
     sessionStorage.setItem("rol_nombre", usuario.rol_nombre);
+    if (token) {
+        sessionStorage.setItem("token", token);
+    }
 }
 
 const limpiarSesion = () => {
@@ -13,6 +16,7 @@ const limpiarSesion = () => {
     sessionStorage.removeItem("email");
     sessionStorage.removeItem("conectado");
     sessionStorage.removeItem("rol_nombre");
+    sessionStorage.removeItem("token");
 }
 
 export const usuarioReducer: UsuarioReducer = (state: Usuario, action: ActionType): Usuario => {
@@ -20,11 +24,11 @@ export const usuarioReducer: UsuarioReducer = (state: Usuario, action: ActionTyp
         
         case 'iniciar_sesion_exitoso': {
             const nuevoEstado = {
-                ...action.payload,
+                ...action.payload.usuario,
                 conectado: true,
                 activo: true,
             };
-            guardarSesion(nuevoEstado);
+            guardarSesion(nuevoEstado, action.payload.token);
             return nuevoEstado;
         }
 

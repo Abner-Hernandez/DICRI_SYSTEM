@@ -1,0 +1,777 @@
+{
+	"info": {
+		"name": "DICRI Sistema API",
+		"description": "Colección completa para probar el API del Sistema de Gestión de Evidencia Criminalística DICRI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_postman_id": "dicri-api-collection-2024"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{jwt_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"exec": [
+					"// Auto-set base URL if not defined",
+					"if (!pm.collectionVariables.get(\"base_url\")) {",
+					"    pm.collectionVariables.set(\"base_url\", \"http://localhost:5000\");",
+					"}"
+				]
+			}
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login Admin (Coordinador)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set(\"jwt_token\", response.token);",
+									"    pm.collectionVariables.set(\"user_id\", response.usuario.id_usuario);",
+									"    pm.collectionVariables.set(\"user_role\", response.usuario.rol_nombre);",
+									"    console.log(\"Token guardado: \" + response.token.substring(0, 20) + \"...\");",
+									"    console.log(\"Rol de usuario: \" + response.usuario.rol_nombre);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@dicri.gob.gt\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login como Coordinador (admin) - puede aprobar/rechazar expedientes"
+					}
+				},
+				{
+					"name": "Login Técnico Juan",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set(\"jwt_token\", response.token);",
+									"    pm.collectionVariables.set(\"user_id\", response.usuario.id_usuario);",
+									"    pm.collectionVariables.set(\"user_role\", response.usuario.rol_nombre);",
+									"    console.log(\"Token guardado: \" + response.token.substring(0, 20) + \"...\");",
+									"    console.log(\"Rol de usuario: \" + response.usuario.rol_nombre);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"juan.perez@dicri.gob.gt\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login como Técnico Juan - puede crear y gestionar expedientes"
+					}
+				},
+				{
+					"name": "Login Técnico María",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set(\"jwt_token\", response.token);",
+									"    pm.collectionVariables.set(\"user_id\", response.usuario.id_usuario);",
+									"    pm.collectionVariables.set(\"user_role\", response.usuario.rol_nombre);",
+									"    console.log(\"Token guardado: \" + response.token.substring(0, 20) + \"...\");",
+									"    console.log(\"Rol de usuario: \" + response.usuario.rol_nombre);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"maria.lopez@dicri.gob.gt\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login como Técnico María - puede crear y gestionar expedientes"
+					}
+				},
+				{
+					"name": "Verificar Token",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/auth/verify",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"verify"
+							]
+						},
+						"description": "Verifica si el token JWT actual es válido"
+					}
+				}
+			],
+			"description": "Endpoints de autenticación - Login y verificación de tokens"
+		},
+		{
+			"name": "Expedientes",
+			"item": [
+				{
+					"name": "Crear Expediente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set(\"expediente_id\", response.id_expediente);",
+									"    console.log(\"Expediente creado con ID: \" + response.id_expediente);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"numero_expediente\": \"DICRI-2024-{{$randomInt}}\",\n    \"descripcion_general\": \"Caso de fraude bancario mediante phishing. El sospechoso utilizó técnicas de ingeniería social para obtener credenciales de acceso a cuentas bancarias de múltiples víctimas.\",\n    \"fecha_incidente\": \"2024-11-15\",\n    \"lugar_incidente\": \"Zona 10, Ciudad de Guatemala. Varios cajeros automáticos del Banco Industrial y oficinas bancarias en el área metropolitana.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/expedientes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"expedientes"
+							]
+						},
+						"description": "Crea un nuevo expediente. Solo técnicos pueden crear expedientes."
+					}
+				},
+				{
+					"name": "Obtener Mis Expedientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/expedientes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"expedientes"
+							]
+						},
+						"description": "Obtiene los expedientes del usuario logueado. Los técnicos ven sus expedientes, los coordinadores ven todos."
+					}
+				},
+				{
+					"name": "Obtener Expediente por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/expedientes/{{expediente_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"expedientes",
+								"{{expediente_id}}"
+							]
+						},
+						"description": "Obtiene un expediente específico por su ID, incluyendo la lista de indicios asociados."
+					}
+				},
+				{
+					"name": "Actualizar Expediente",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"descripcion_general\": \"Caso de fraude bancario mediante phishing - ACTUALIZADO. Se encontraron nuevas evidencias que involucran también tarjetas de crédito clonadas.\",\n    \"lugar_incidente\": \"Zona 10, Ciudad de Guatemala. Varios cajeros automáticos del Banco Industrial y oficinas bancarias. Se amplió la investigación a centros comerciales de la Zona 4.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/expedientes/{{expediente_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"expedientes",
+								"{{expediente_id}}"
+							]
+						},
+						"description": "Actualiza un expediente existente. Solo el técnico que lo creó puede actualizarlo."
+					}
+				},
+				{
+					"name": "Eliminar Expediente",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/expedientes/{{expediente_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"expedientes",
+								"{{expediente_id}}"
+							]
+						},
+						"description": "Elimina un expediente. Solo el técnico que lo creó puede eliminarlo, y solo si está en estado 'En Registro'."
+					}
+				},
+				{
+					"name": "Enviar Expediente a Revisión",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"observaciones\": \"Expediente completo con todas las evidencias recolectadas. Listo para revisión del coordinador.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/expedientes/{{expediente_id}}/enviar-revision",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"expedientes",
+								"{{expediente_id}}",
+								"enviar-revision"
+							]
+						},
+						"description": "Envía un expediente a revisión. Solo el técnico que lo creó puede enviarlo a revisión."
+					}
+				},
+				{
+					"name": "Obtener Expedientes en Revisión (Coordinador)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/expedientes/revision/pendientes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"expedientes",
+								"revision",
+								"pendientes"
+							]
+						},
+						"description": "Obtiene expedientes pendientes de revisión. Solo coordinadores pueden acceder."
+					}
+				},
+				{
+					"name": "Aprobar Expediente (Coordinador)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"observaciones\": \"Expediente aprobado. Todas las evidencias están correctamente documentadas y cumplen con los protocolos establecidos.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/expedientes/{{expediente_id}}/aprobar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"expedientes",
+								"{{expediente_id}}",
+								"aprobar"
+							]
+						},
+						"description": "Aprueba un expediente en revisión. Solo coordinadores pueden aprobar."
+					}
+				},
+				{
+					"name": "Rechazar Expediente (Coordinador)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"justificacion\": \"El expediente requiere evidencias adicionales. Falta documentar la cadena de custodia de los dispositivos móviles incautados y se necesita el análisis forense de los discos duros.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/expedientes/{{expediente_id}}/rechazar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"expedientes",
+								"{{expediente_id}}",
+								"rechazar"
+							]
+						},
+						"description": "Rechaza un expediente en revisión. Solo coordinadores pueden rechazar."
+					}
+				}
+			],
+			"description": "Gestión completa de expedientes - CRUD, workflow de aprobación"
+		},
+		{
+			"name": "Indicios",
+			"item": [
+				{
+					"name": "Crear Indicio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set(\"indicio_id\", response.id_indicio);",
+									"    console.log(\"Indicio creado con ID: \" + response.id_indicio);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"numero_indicio\": \"IND-{{$randomInt}}\",\n    \"descripcion\": \"Teléfono móvil Samsung Galaxy S21 utilizado para realizar las transacciones fraudulentas. Contiene evidencia digital de conversaciones y aplicaciones bancarias.\",\n    \"id_tipo\": 2,\n    \"ubicacion_hallazgo\": \"Domicilio del sospechoso, 15 Avenida 8-45 Zona 10\",\n    \"color\": \"Negro\",\n    \"tamanio\": \"15.7 x 7.1 x 0.79 cm\",\n    \"peso\": 169.0\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/expedientes/{{expediente_id}}/indicios",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"expedientes",
+								"{{expediente_id}}",
+								"indicios"
+							]
+						},
+						"description": "Crea un nuevo indicio asociado a un expediente específico."
+					}
+				},
+				{
+					"name": "Obtener Indicios del Expediente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/expedientes/{{expediente_id}}/indicios",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"expedientes",
+								"{{expediente_id}}",
+								"indicios"
+							]
+						},
+						"description": "Obtiene todos los indicios asociados a un expediente específico."
+					}
+				},
+				{
+					"name": "Obtener Indicio por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/indicios/{{indicio_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"indicios",
+								"{{indicio_id}}"
+							]
+						},
+						"description": "Obtiene un indicio específico por su ID."
+					}
+				},
+				{
+					"name": "Actualizar Indicio",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"descripcion\": \"Teléfono móvil Samsung Galaxy S21 utilizado para realizar las transacciones fraudulentas - ACTUALIZADO. Análisis forense completado, se encontraron 15 aplicaciones bancarias y 200+ mensajes relacionados con el fraude.\",\n    \"estado_conservacion\": \"Bueno - Análisis completado\",\n    \"observaciones\": \"Dispositivo encontrado encendido. Imagen forense realizada exitosamente. Se extrajo información de WhatsApp, Telegram y aplicaciones bancarias. Batería reemplazada para preservación.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/indicios/{{indicio_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"indicios",
+								"{{indicio_id}}"
+							]
+						},
+						"description": "Actualiza un indicio existente. Solo el técnico que lo creó puede actualizarlo."
+					}
+				},
+				{
+					"name": "Eliminar Indicio",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/indicios/{{indicio_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"indicios",
+								"{{indicio_id}}"
+							]
+						},
+						"description": "Elimina un indicio. Solo el técnico que lo creó puede eliminarlo."
+					}
+				},
+				{
+					"name": "Obtener Tipos de Indicios",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/expedientes/tipos/indicios",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"expedientes",
+								"tipos",
+								"indicios"
+							]
+						},
+						"description": "Obtiene la lista de tipos de indicios disponibles para crear evidencias."
+					}
+				},
+				{
+					"name": "Crear Segundo Indicio (Laptop)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    console.log(\"Segundo indicio creado con ID: \" + response.id_indicio);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"numero_indicio\": \"IND-{{$randomInt}}\",\n    \"descripcion\": \"Computadora portátil Dell Inspiron 15 utilizada para crear las páginas de phishing y gestionar las cuentas fraudulentas.\",\n    \"id_tipo\": 2,\n    \"ubicacion_hallazgo\": \"Domicilio del sospechoso, escritorio principal\",\n    \"color\": \"Plateado\",\n    \"tamanio\": \"35.8 x 24.7 x 1.8 cm\",\n    \"peso\": 1650.0\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/expedientes/{{expediente_id}}/indicios",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"expedientes",
+								"{{expediente_id}}",
+								"indicios"
+							]
+						},
+						"description": "Crea un segundo indicio de ejemplo (laptop) para demostrar múltiples evidencias."
+					}
+				}
+			],
+			"description": "Gestión de indicios/evidencias - CRUD completo"
+		},
+		{
+			"name": "Usuarios",
+			"item": [
+				{
+					"name": "Crear Usuario",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Carlos\",\n    \"apellido\": \"García\",\n    \"email\": \"carlos.garcia@dicri.gob.gt\",\n    \"password\": \"password123\",\n    \"id_rol\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/usuarios",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"usuarios"
+							]
+						},
+						"description": "Crea un nuevo usuario. Solo coordinadores pueden crear usuarios."
+					}
+				},
+				{
+					"name": "Obtener Todos los Usuarios",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"usuarios"
+							]
+						},
+						"description": "Obtiene la lista de todos los usuarios. Solo coordinadores pueden ver todos los usuarios."
+					}
+				},
+				{
+					"name": "Obtener Usuario por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"usuarios",
+								"{{user_id}}"
+							]
+						},
+						"description": "Obtiene un usuario específico por su ID."
+					}
+				},
+				{
+					"name": "Actualizar Usuario",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Carlos Alberto\",\n    \"apellido\": \"García Rodríguez\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"usuarios",
+								"{{user_id}}"
+							]
+						},
+						"description": "Actualiza un usuario existente. Solo coordinadores pueden actualizar usuarios."
+					}
+				},
+				{
+					"name": "Eliminar Usuario",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"usuarios",
+								"{{user_id}}"
+							]
+						},
+						"description": "Elimina un usuario. Solo coordinadores pueden eliminar usuarios."
+					}
+				}
+			],
+			"description": "Gestión de usuarios del sistema"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_role",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "expediente_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "indicio_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
