@@ -544,7 +544,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"nombre_objeto\": \"Teléfono móvil Samsung Galaxy S21 - Analizado\",\n    \"descripcion\": \"Teléfono móvil Samsung Galaxy S21 utilizado para realizar las transacciones fraudulentas - ACTUALIZADO. Análisis forense completado, se encontraron 15 aplicaciones bancarias y 200+ mensajes relacionados con el fraude.\",\n    \"ubicacion_hallazgo\": \"Domicilio del sospechoso, 15 Avenida 8-45 Zona 10\",\n    \"color\": \"Negro\",\n    \"tamanio\": \"15.7 x 7.1 x 0.79 cm\",\n    \"peso\": 169.0,\n    \"unidad_peso\": \"gramos\",\n    \"observaciones\": \"Dispositivo encontrado encendido. Imagen forense realizada exitosamente. Se extrajo información de WhatsApp, Telegram y aplicaciones bancarias. Batería reemplazada para preservación.\"\n}"
+							"raw": "{\n    \"nombre_objeto\": \"Teléfono móvil Samsung Galaxy S21 - Analizado\",\n    \"descripcion\": \"Teléfono móvil Samsung Galaxy S21 utilizado para realizar las transacciones fraudulentas - ACTUALIZADO. Análisis forense completado, se encontraron 15 aplicaciones bancarias y 200+ mensajes relacionados con el fraude.\",\n    \"tipo_evidencia\": \"Dispositivo Electrónico\",\n    \"ubicacion_hallazgo\": \"Domicilio del sospechoso, 15 Avenida 8-45 Zona 10\",\n    \"color\": \"Negro\",\n    \"tamanio\": \"15.7 x 7.1 x 0.79 cm\",\n    \"peso\": 169.0,\n    \"unidad_peso\": \"gramos\",\n    \"observaciones\": \"Dispositivo encontrado encendido. Imagen forense realizada exitosamente. Se extrajo información de WhatsApp, Telegram y aplicaciones bancarias. Batería reemplazada para preservación.\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/indicios/{{indicio_id}}",

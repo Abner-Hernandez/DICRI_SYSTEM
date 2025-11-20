@@ -49,6 +49,9 @@ const {
   obtenerSiguienteNumeroIndicio
 } = require('../controllers/indicioController');
 
+// Ruta para obtener tipos de indicios disponibles (debe ir antes de las rutas con parámetros)
+router.get('/tipos/indicios', authenticateToken, obtenerTiposIndicio);
+
 router.get('/:id_expediente/indicios', authenticateToken, listarIndiciosPorExpediente);
 
 router.get('/:id_expediente/indicios/siguiente-numero', authenticateToken, obtenerSiguienteNumeroIndicio);
@@ -69,9 +72,6 @@ router.post('/:id_expediente/indicios', [
   validateRequest
 ], crearIndicio);
 
-// Ruta para obtener tipos de indicios disponibles
-router.get('/tipos/indicios', authenticateToken, obtenerTiposIndicio);
-
 // Rutas para flujo de revisión y aprobación
 const { 
   enviarARevision,
@@ -80,6 +80,12 @@ const {
   listarExpedientesEnRevision,
   obtenerHistorialExpediente
 } = require('../controllers/revisionController');
+
+// Listar expedientes en revisión (solo coordinadores) - debe ir antes de las rutas con parámetros
+router.get('/revision/pendientes', [
+  authenticateToken,
+  authorizeRoles('Coordinador', 'Administrador')
+], listarExpedientesEnRevision);
 
 // Enviar expediente a revisión (solo técnicos)
 router.post('/:id_expediente/enviar-revision', [
@@ -101,12 +107,6 @@ router.post('/:id_expediente/rechazar', [
   body('justificacion').notEmpty().withMessage('Justificación requerida'),
   validateRequest
 ], rechazarExpediente);
-
-// Listar expedientes en revisión (solo coordinadores)
-router.get('/revision/pendientes', [
-  authenticateToken,
-  authorizeRoles('Coordinador', 'Administrador')
-], listarExpedientesEnRevision);
 
 // Obtener historial de un expediente
 router.get('/:id_expediente/historial', authenticateToken, obtenerHistorialExpediente);
