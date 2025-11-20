@@ -144,16 +144,6 @@ const Login = () => {
                     >
                         Ingresar
                     </Button>
-
-                    {/* Botón de Registro */}
-                    <Button 
-                        fullWidth 
-                        variant="text" 
-                        onClick={() => navigate('/registro')}
-                        sx={{ color: (theme) => theme.palette.grey[600] }}
-                    >
-                        ¿No tienes cuenta? ¡Regístrate!
-                    </Button>
                 </Box>
             </Paper>
         </Container>

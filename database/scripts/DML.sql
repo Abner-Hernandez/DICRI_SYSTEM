@@ -63,7 +63,7 @@ WHERE r.nombre = 'Administrador';
 GO
 
 INSERT INTO usuario (nombre, apellido, email, password_hash, id_rol) VALUES
-('Admin', 'Sistema', 'admin@dicri.gob.gt', '$$2b$10$lPi8Z.hPTq698c8vVa7pf.0sT08BTr.QpIELXEO7t1K0196XvXQfe', 
+('Admin', 'Sistema', 'admin@dicri.gob.gt', '$2b$10$lPi8Z.hPTq698c8vVa7pf.0sT08BTr.QpIELXEO7t1K0196XvXQfe', 
  (SELECT id_rol FROM rol WHERE nombre = 'Administrador'));
 GO
 
