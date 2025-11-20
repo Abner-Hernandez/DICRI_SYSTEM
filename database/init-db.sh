@@ -13,8 +13,6 @@ SQLCMD="/opt/mssql-tools/bin/sqlcmd"
 
 echo "Esperando a que SQL Server esté listo..."
 
-# ... (LÓGICA DE REINTENTOS)
-# ...
 if [ $STATUS -ne 0 ]; then
     echo "¡ERROR FATAL! SQL Server no respondió después de $((MAX_RETRIES * 5)) segundos."
     exit 1
@@ -25,7 +23,6 @@ echo "SQL Server está listo. Iniciando scripts de inicialización."
 # 1. CREACIÓN DE BASE DE DATOS Y OBJETOS DDL
 # -----------------------------------------------------------------
 echo "Ejecutando scripts DDL (incluye CREATE DATABASE)..."
-# Usamos 'master' y ejecutamos el DDL para garantizar que la base de datos exista
 ${SQLCMD} -S ${DB_HOST} -U ${DB_USER} -P "${DB_SA_PASSWORD}" -d master -i /docker-entrypoint-initdb.d/DDL.sql
 
 if [ $? -ne 0 ]; then
@@ -72,9 +69,49 @@ echo "Usuario de aplicación creado y roles básicos asignados."
 echo ""
 
 # -----------------------------------------------------------------
-# 3. ASIGNACIÓN DE PERMISOS ESPECÍFICOS (EXECUTE)
+# 3. ASIGNACIÓN DE PERMISOS ESPECÍFICOS (EXECUTE y CRUD para dicri_backend)
 # -----------------------------------------------------------------
-echo "Otorgando permisos EXECUTE a todos los procedimientos almacenados..."
+echo "Otorgando permisos específicos para el usuario dicri_backend..."
+${SQLCMD} -S ${DB_HOST} -U ${DB_USER} -P "${DB_SA_PASSWORD}" -d ${DB_NAME} -Q "
+    
+    -- Los permisos específicos se otorgan a ${DB_USER_APP} (que en este contexto es dicri_backend)
+    
+    -- Otorgar permisos EXECUTE a procedimientos almacenados específicos
+    GRANT EXECUTE ON sp_registrar_auditoria TO [${DB_USER_APP}];
+    GRANT EXECUTE ON sp_crear_expediente TO [${DB_USER_APP}];
+    GRANT EXECUTE ON sp_registrar_indicio TO [${DB_USER_APP}];
+    GRANT EXECUTE ON sp_enviar_a_revision TO [${DB_USER_APP}];
+    GRANT EXECUTE ON sp_aprobar_expediente TO [${DB_USER_APP}];
+    GRANT EXECUTE ON sp_rechazar_expediente TO [${DB_USER_APP}];
+
+    -- Otorgar permisos CRUD (SELECT, INSERT, UPDATE, DELETE) en tablas específicas
+    GRANT SELECT, INSERT, UPDATE, DELETE ON usuario TO [${DB_USER_APP}];
+    GRANT SELECT, INSERT, UPDATE, DELETE ON rol TO [${DB_USER_APP}];
+    GRANT SELECT, INSERT, UPDATE, DELETE ON permiso TO [${DB_USER_APP}];
+    GRANT SELECT, INSERT, UPDATE, DELETE ON rol_permiso TO [${DB_USER_APP}];
+    GRANT SELECT, INSERT, UPDATE, DELETE ON estado_expediente TO [${DB_USER_APP}];
+    GRANT SELECT, INSERT, UPDATE, DELETE ON expediente TO [${DB_USER_APP}];
+    GRANT SELECT, INSERT, UPDATE, DELETE ON tipo_indicio TO [${DB_USER_APP}];
+    GRANT SELECT, INSERT, UPDATE, DELETE ON indicio TO [${DB_USER_APP}];
+    GRANT SELECT, INSERT, UPDATE, DELETE ON historial_expediente TO [${DB_USER_APP}];
+    GRANT SELECT, INSERT, UPDATE, DELETE ON tecnico_expediente TO [${DB_USER_APP}];
+    GRANT SELECT, INSERT, UPDATE, DELETE ON adjunto_indicio TO [${DB_USER_APP}];
+    GRANT SELECT, INSERT, UPDATE, DELETE ON auditoria TO [${DB_USER_APP}];
+    
+    PRINT 'Permisos específicos para dicri_backend (EXECUTE y CRUD) otorgados.';
+"
+
+if [ $? -ne 0 ]; then
+    echo "Error otorgando permisos específicos."
+    exit 1
+fi
+echo "Permisos específicos para dicri_backend otorgados."
+echo ""
+
+# -----------------------------------------------------------------
+# 4. ASIGNACIÓN DE PERMISOS GENÉRICOS (EXECUTE)
+# -----------------------------------------------------------------
+echo "Otorgando permisos EXECUTE a procedimientos almacenados RESTANTES..."
 ${SQLCMD} -S ${DB_HOST} -U ${DB_USER} -P "${DB_SA_PASSWORD}" -d ${DB_NAME} -Q "
     DECLARE @sql NVARCHAR(MAX) = '';
     
@@ -88,7 +125,7 @@ ${SQLCMD} -S ${DB_HOST} -U ${DB_USER} -P "${DB_SA_PASSWORD}" -d ${DB_NAME} -Q "
     IF LEN(@sql) > 0
     BEGIN
         EXEC sp_executesql @sql;
-        PRINT 'Permisos EXECUTE otorgados a ${DB_USER_APP}';
+        PRINT 'Permisos EXECUTE genéricos otorgados a ${DB_USER_APP}';
     END
     ELSE
     BEGIN
@@ -97,14 +134,14 @@ ${SQLCMD} -S ${DB_HOST} -U ${DB_USER} -P "${DB_SA_PASSWORD}" -d ${DB_NAME} -Q "
 "
 
 if [ $? -ne 0 ]; then
-    echo "Error otorgando permisos EXECUTE."
+    echo "Error otorgando permisos EXECUTE genéricos."
     exit 1
 fi
-echo "Permisos EXECUTE otorgados."
+echo "Permisos EXECUTE genéricos otorgados."
 echo ""
 
 # -----------------------------------------------------------------
-# 4. EJECUCIÓN DE SCRIPTS DML
+# 5. EJECUCIÓN DE SCRIPTS DML
 # -----------------------------------------------------------------
 echo "Ejecutando scripts DML..."
 ${SQLCMD} -S ${DB_HOST} -U ${DB_USER} -P "${DB_SA_PASSWORD}" -d ${DB_NAME} -i /docker-entrypoint-initdb.d/DML.sql

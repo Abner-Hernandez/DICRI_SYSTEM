@@ -7,7 +7,7 @@ GO
 CREATE TABLE [rol] (
   [id_rol] int PRIMARY KEY IDENTITY(1, 1),
   [nombre] varchar(50) UNIQUE NOT NULL,
-  [descripcion] text,
+  [descripcion] VARCHAR(MAX), -- CORRECCIÓN: TEXT a VARCHAR(MAX)
   CONSTRAINT CHK_rol_nombre CHECK (nombre IN ('Técnico', 'Coordinador', 'Administrador'))
 )
 GO
@@ -28,7 +28,7 @@ GO
 CREATE TABLE [permiso] (
   [id_permiso] int PRIMARY KEY IDENTITY(1, 1),
   [nombre] varchar(100) UNIQUE NOT NULL,
-  [descripcion] text,
+  [descripcion] VARCHAR(MAX), -- CORRECCIÓN: TEXT a VARCHAR(MAX)
   [modulo] varchar(50)
 )
 GO
@@ -43,7 +43,7 @@ GO
 CREATE TABLE [estado_expediente] (
   [id_estado] int PRIMARY KEY IDENTITY(1, 1),
   [nombre] varchar(50) UNIQUE NOT NULL,
-  [descripcion] text,
+  [descripcion] VARCHAR(MAX), -- CORRECCIÓN: TEXT a VARCHAR(MAX)
   CONSTRAINT CHK_estado_nombre CHECK (nombre IN ('En Registro', 'En Revisión', 'Aprobado', 'Rechazado'))
 )
 GO
@@ -51,13 +51,13 @@ GO
 CREATE TABLE [expediente] (
   [id_expediente] int PRIMARY KEY IDENTITY(1, 1),
   [numero_expediente] varchar(50) UNIQUE NOT NULL,
-  [descripcion_general] text NOT NULL,
+  [descripcion_general] VARCHAR(MAX) NOT NULL, -- CORRECCIÓN: TEXT a VARCHAR(MAX)
   [fecha_registro] datetime NOT NULL DEFAULT (GETDATE()),
   [fecha_incidente] date,
-  [lugar_incidente] text,
+  [lugar_incidente] VARCHAR(MAX), -- CORRECCIÓN: TEXT a VARCHAR(MAX)
   [id_usuario_registro] int NOT NULL,
   [id_estado] int NOT NULL,
-  [justificacion_rechazo] text,
+  [justificacion_rechazo] VARCHAR(MAX), -- CORRECCIÓN: TEXT a VARCHAR(MAX)
   [fecha_aprobacion] datetime,
   [id_usuario_aprobacion] int,
   [fecha_modificacion] datetime
@@ -67,7 +67,7 @@ GO
 CREATE TABLE [tipo_indicio] (
   [id_tipo] int PRIMARY KEY IDENTITY(1, 1),
   [nombre] varchar(100) UNIQUE NOT NULL,
-  [descripcion] text
+  [descripcion] VARCHAR(MAX) -- CORRECCIÓN: TEXT a VARCHAR(MAX)
 )
 GO
 
@@ -76,16 +76,16 @@ CREATE TABLE [indicio] (
   [id_expediente] int NOT NULL,
   [numero_indicio] varchar(50) NOT NULL,
   [nombre_objeto] varchar(200) NOT NULL,
-  [descripcion] text NOT NULL,
+  [descripcion] VARCHAR(MAX) NOT NULL, -- CORRECCIÓN: TEXT a VARCHAR(MAX)
   [color] varchar(100),
   [tamanio] varchar(100),
   [peso] decimal(10,2),
   [unidad_peso] varchar(20),
-  [ubicacion_hallazgo] text NOT NULL,
+  [ubicacion_hallazgo] VARCHAR(MAX) NOT NULL, -- CORRECCIÓN: TEXT a VARCHAR(MAX)
   [id_tipo_indicio] int,
   [id_usuario_registro] int NOT NULL,
   [fecha_registro] datetime NOT NULL DEFAULT (GETDATE()),
-  [observaciones] text
+  [observaciones] VARCHAR(MAX) -- CORRECCIÓN: TEXT a VARCHAR(MAX)
 )
 GO
 
@@ -96,7 +96,7 @@ CREATE TABLE [historial_expediente] (
   [id_estado_nuevo] int NOT NULL,
   [id_usuario] int NOT NULL,
   [fecha_cambio] datetime NOT NULL DEFAULT (GETDATE()),
-  [comentario] text
+  [comentario] VARCHAR(MAX) -- CORRECCIÓN: TEXT a VARCHAR(MAX)
 )
 GO
 
@@ -252,9 +252,9 @@ GO
 
 CREATE PROCEDURE sp_crear_expediente
     @numero_expediente VARCHAR(50),
-    @descripcion_general TEXT,
+    @descripcion_general VARCHAR(MAX), -- CORRECCIÓN: TEXT a VARCHAR(MAX)
     @fecha_incidente DATE,
-    @lugar_incidente TEXT,
+    @lugar_incidente VARCHAR(MAX), -- CORRECCIÓN: TEXT a VARCHAR(MAX)
     @id_usuario_registro INT,
     @ip_address VARCHAR(45) = NULL,
     @id_expediente_out INT OUTPUT
@@ -304,15 +304,15 @@ CREATE PROCEDURE sp_registrar_indicio
     @id_expediente INT,
     @numero_indicio VARCHAR(50),
     @nombre_objeto VARCHAR(200),
-    @descripcion TEXT,
+    @descripcion VARCHAR(MAX), -- CORRECCIÓN: TEXT a VARCHAR(MAX)
     @color VARCHAR(100) = NULL,
     @tamanio VARCHAR(100) = NULL,
     @peso DECIMAL(10,2) = NULL,
     @unidad_peso VARCHAR(20) = NULL,
-    @ubicacion_hallazgo TEXT,
+    @ubicacion_hallazgo VARCHAR(MAX), -- CORRECCIÓN: TEXT a VARCHAR(MAX)
     @id_tipo_indicio INT = NULL,
     @id_usuario_registro INT,
-    @observaciones TEXT = NULL,
+    @observaciones VARCHAR(MAX) = NULL, -- CORRECCIÓN: TEXT a VARCHAR(MAX)
     @ip_address VARCHAR(45) = NULL,
     @id_indicio_out INT OUTPUT
 AS
@@ -476,7 +476,7 @@ GO
 CREATE PROCEDURE sp_rechazar_expediente
     @id_expediente INT,
     @id_usuario_coordinador INT,
-    @justificacion_rechazo TEXT,
+    @justificacion_rechazo VARCHAR(MAX), -- CORRECCIÓN: TEXT a VARCHAR(MAX)
     @ip_address VARCHAR(45) = NULL
 AS
 BEGIN
@@ -776,30 +776,6 @@ BEGIN
         i.id_usuario,
         (SELECT * FROM deleted d WHERE d.id_usuario = i.id_usuario FOR JSON PATH, WITHOUT_ARRAY_WRAPPER),
         (SELECT * FROM inserted ins WHERE ins.id_usuario = i.id_usuario FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
-    FROM insert
+    FROM inserted i; -- CORRECCIÓN: Se agrega 'ed' a 'insert' y el alias 'i'
+END
 GO
-
--- Otorgar permisos al usuario dicri_backend
-GRANT EXECUTE ON sp_registrar_auditoria TO dicri_backend;
-GRANT EXECUTE ON sp_crear_expediente TO dicri_backend;
-GRANT EXECUTE ON sp_registrar_indicio TO dicri_backend;
-GRANT EXECUTE ON sp_enviar_a_revision TO dicri_backend;
-GRANT EXECUTE ON sp_aprobar_expediente TO dicri_backend;
-GRANT EXECUTE ON sp_rechazar_expediente TO dicri_backend;
-
--- Otorgar permisos CRUD en todas las tablas necesarias
-
-GRANT SELECT, INSERT, UPDATE, DELETE ON usuario TO dicri_backend;
-GRANT SELECT, INSERT, UPDATE, DELETE ON rol TO dicri_backend;
-GRANT SELECT, INSERT, UPDATE, DELETE ON permiso TO dicri_backend;
-GRANT SELECT, INSERT, UPDATE, DELETE ON rol_permiso TO dicri_backend;
-GRANT SELECT, INSERT, UPDATE, DELETE ON estado_expediente TO dicri_backend;
-GRANT SELECT, INSERT, UPDATE, DELETE ON expediente TO dicri_backend;
-GRANT SELECT, INSERT, UPDATE, DELETE ON tipo_indicio TO dicri_backend;
-GRANT SELECT, INSERT, UPDATE, DELETE ON indicio TO dicri_backend;
-GRANT SELECT, INSERT, UPDATE, DELETE ON historial_expediente TO dicri_backend;
-GRANT SELECT, INSERT, UPDATE, DELETE ON tecnico_expediente TO dicri_backend;
-GRANT SELECT, INSERT, UPDATE, DELETE ON adjunto_indicio TO dicri_backend;
-GRANT SELECT, INSERT, UPDATE, DELETE ON auditoria TO dicri_backend;
-
-PRINT 'Permisos otorgados correctamente al usuario dicri_backend';
