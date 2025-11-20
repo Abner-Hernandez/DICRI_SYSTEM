@@ -43,8 +43,6 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import Usuario from '../clases/usuario';
 import { ActionType } from '../types/actions';
 
-const LOGIN_API_ENDPOINT = "http://localhost:5000";
-
 interface ItemMenuData {
     id: number;
     nombre: string;
@@ -173,9 +171,9 @@ const Menu: React.FC = () => {
     const cargarMenuDesdeAPI = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
+            const token = sessionStorage.getItem('token');
             
-            const response = await fetch(LOGIN_API_ENDPOINT + '/api/menu', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/menu`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

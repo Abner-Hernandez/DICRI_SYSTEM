@@ -4,8 +4,6 @@ import { usuarioReducer } from '../reducers/usuarioReducer';
 import { ActionType } from "../types/actions";
 import Usuario from "../clases/usuario";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
-
 // Función para recuperar usuario desde sessionStorage
 const getUsuarioFromStorage = (): Usuario => {
     const conectado = sessionStorage.getItem('conectado') === 'true';
@@ -33,7 +31,7 @@ function UsuarioProvider({ children }: { children: React.ReactNode }) {
     const dispatch = async (action: ActionType) => {
         if (action.type === 'conectarse') {
             try {
-                const response = await fetch(API_BASE_URL + "/api/auth/login", { 
+                const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/login`, { 
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -49,14 +47,6 @@ function UsuarioProvider({ children }: { children: React.ReactNode }) {
                 }
                 
                 const data = await response.json();
-                
-                const usuarioData: Usuario = {
-                    ...data, 
-                    conectado: true,
-                    activo: true,
-                };
-
-                localStorage.setItem('token', data.token);
                 
                 defaultDispatch({ 
                     type: 'iniciar_sesion_exitoso', 
