@@ -63,13 +63,13 @@ WHERE r.nombre = 'Administrador';
 GO
 
 INSERT INTO usuario (nombre, apellido, email, password_hash, id_rol) VALUES
-('Admin', 'Sistema', 'admin@dicri.gob.gt', '$2a$10$rP8KvZ5yX.Jz8YhHqF3qZOGxK5H8nV2xW4fD1sT6uY7cE9bL0mN3q', 
+('Admin', 'Sistema', 'admin@dicri.gob.gt', '$$2b$10$lPi8Z.hPTq698c8vVa7pf.0sT08BTr.QpIELXEO7t1K0196XvXQfe', 
  (SELECT id_rol FROM rol WHERE nombre = 'Administrador'));
 GO
 
 INSERT INTO usuario (nombre, apellido, email, password_hash, id_rol) VALUES
-('Juan', 'Pérez', 'juan.perez@dicri.gob.gt', '$2a$10$8KvZ5yX.Jz8YhHqF3qZOGxK5H8nV2xW4fD1sT6uY7cE9bL0mN3qrP', 
+('Juan', 'Pérez', 'juan.perez@dicri.gob.gt', '$2b$10$lPi8Z.hPTq698c8vVa7pf.0sT08BTr.QpIELXEO7t1K0196XvXQfe', 
  (SELECT id_rol FROM rol WHERE nombre = 'Técnico')),
-('María', 'López', 'maria.lopez@dicri.gob.gt', '$2a$10$9LwA6zY.Kz9ZiIrG4rRaPxL6I9oW3yX5gE2tU7vZ8dF0cM1nO4sS', 
+('María', 'López', 'maria.lopez@dicri.gob.gt', '$2b$10$lPi8Z.hPTq698c8vVa7pf.0sT08BTr.QpIELXEO7t1K0196XvXQfe', 
  (SELECT id_rol FROM rol WHERE nombre = 'Coordinador'));
 GO

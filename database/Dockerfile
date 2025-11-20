@@ -16,7 +16,6 @@ RUN apt-get update && \
 RUN mkdir -p /docker-entrypoint-initdb.d
 
 COPY ./scripts/DDL.sql /docker-entrypoint-initdb.d/
-COPY ./scripts/create-user.sql /docker-entrypoint-initdb.d/
 COPY ./scripts/DML.sql /docker-entrypoint-initdb.d/
 COPY ./init-db.sh /init-db.sh
 

@@ -1,7 +1,4 @@
 services:
-  # ============================================
-  # BASE DE DATOS - SQL SERVER
-  # ============================================
   database:
     build:
       context: ./database
@@ -29,13 +26,68 @@ services:
       - dicri_network
     healthcheck:
       test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", 
-             "-S", "${DB_HOST}",
-             "-U", "${DB_USER_ADMIN}",
-             "-P", "${DB_SA_PASSWORD}", 
+             "-S", "${DB_HOST_INIT}",
+             "-U", "${DB_USER_APP}",
+             "-P", "${DB_PASSWORD_APP}", 
              "-Q", "SELECT 1"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dicri_backend
+    environment:
+      - DB_HOST=${DB_HOST_APP} 
+      - DB_USER=${DB_USER_APP}
+      - DB_PASSWORD=${DB_PASSWORD_APP}
+      - DB_NAME=${DB_NAME}
+      - PORT=${API_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - DB_PORT=${DB_PORT}
+      - DB_ENCRYPT=${DB_ENCRYPT}
+      - DB_TRUST_SERVER_CERTIFICATE=${DB_TRUST_SERVER_CERTIFICATE} 
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - API_HOST=${API_HOST}
+      - UPLOAD_PATH=${UPLOAD_PATH}
+      - MAX_FILE_SIZE=${MAX_FILE_SIZE}
+      - LOG_LEVEL=${LOG_LEVEL}
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - dicri_network
+    depends_on:
+      database:
+        condition: service_healthy
+    command: npm start
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: dicri_frontend
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_API_URL=http://${BACKEND_URL}${API_PORT}
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - dicri_network
+    depends_on:
+      backend:
+        condition: service_started
+    command: npm start 
+    restart: unless-stopped
 
 volumes:
   sqlserver_data:
