@@ -5,6 +5,10 @@ import CrearUsuario from '../componentes/crearUsuario';
 import ExpedientesLista from '../componentes/expedientesLista';
 import NuevoExpediente from '../componentes/nuevoExpediente';
 import DetalleExpediente from '../componentes/detalleExpediente';
+import EditarExpediente from '../componentes/editarExpediente';
+import NuevoIndicio from '../componentes/nuevoIndicio';
+import DetalleIndicio from '../componentes/detalleIndicio';
+import EditarIndicio from '../componentes/editarIndicio';
 import UsuarioContext from '../context/usuarioContext';
 import Menu from '../navbar/menu';
 import IdleTimerWrapper from '../componentes/IdleTimerWrapper';
@@ -15,6 +19,10 @@ const ComponentMap = {
     'CrearUsuario': CrearUsuario,
     'NuevoExpediente': NuevoExpediente,
     'DetalleExpediente': DetalleExpediente,
+    'EditarExpediente': EditarExpediente,
+    'NuevoIndicio': NuevoIndicio,
+    'DetalleIndicio': DetalleIndicio,
+    'EditarIndicio': EditarIndicio,
     'Login': Login,
 };
 
@@ -109,6 +117,38 @@ const AppRouter = () => {
                         element={
                             state.conectado ? 
                             <DetalleExpediente /> : 
+                            <Navigate to="/ingreso" />
+                        } 
+                    />
+                    <Route 
+                        path="/expedientes/:id/indicios/nuevo" 
+                        element={
+                            state.conectado ? 
+                            <NuevoIndicio /> : 
+                            <Navigate to="/ingreso" />
+                        } 
+                    />
+                    <Route 
+                        path="/expedientes/:id/editar" 
+                        element={
+                            state.conectado ? 
+                            <EditarExpediente /> : 
+                            <Navigate to="/ingreso" />
+                        } 
+                    />
+                    <Route 
+                        path="/expedientes/:id/indicios/:indicioId" 
+                        element={
+                            state.conectado ? 
+                            <DetalleIndicio /> : 
+                            <Navigate to="/ingreso" />
+                        } 
+                    />
+                    <Route 
+                        path="/expedientes/:id/indicios/:indicioId/editar" 
+                        element={
+                            state.conectado ? 
+                            <EditarIndicio /> : 
                             <Navigate to="/ingreso" />
                         } 
                     />

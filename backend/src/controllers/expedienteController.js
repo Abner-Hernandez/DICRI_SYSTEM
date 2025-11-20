@@ -74,7 +74,7 @@ const obtenerExpediente = async (req, res, next) => {
 const actualizarExpediente = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { descripcion_general, fecha_incidente, lugar_incidente } = req.body;
+    const { numero_expediente, descripcion_general, fecha_incidente, lugar_incidente } = req.body;
     const id_usuario = req.user.id_usuario;
 
     const pool = getPool();
@@ -83,7 +83,7 @@ const actualizarExpediente = async (req, res, next) => {
     const expedienteResult = await pool.request()
       .input('id_expediente', sql.Int, id)
       .query(`
-        SELECT e.id_expediente, e.id_usuario_registro, est.nombre as estado
+        SELECT e.id_expediente, e.id_usuario_registro, e.numero_expediente, est.nombre as estado
         FROM expediente e
         INNER JOIN estado_expediente est ON e.id_estado = est.id_estado
         WHERE e.id_expediente = @id_expediente
@@ -95,9 +95,20 @@ const actualizarExpediente = async (req, res, next) => {
 
     const expediente = expedienteResult.recordset[0];
     
-    // Solo el técnico que creó el expediente puede modificarlo
-    if (expediente.id_usuario_registro !== id_usuario) {
-      return res.status(403).json({ error: 'Solo el técnico que creó el expediente puede modificarlo' });
+    // Solo el técnico que creó el expediente puede modificarlo (o un administrador)
+    const usuarioResult = await pool.request()
+      .input('id_usuario', sql.Int, id_usuario)
+      .query(`
+        SELECT r.nombre as rol
+        FROM usuario u 
+        INNER JOIN rol r ON u.id_rol = r.id_rol
+        WHERE u.id_usuario = @id_usuario
+      `);
+
+    const rolUsuario = usuarioResult.recordset[0]?.rol;
+    
+    if (expediente.id_usuario_registro !== id_usuario && rolUsuario !== 'Administrador') {
+      return res.status(403).json({ error: 'Solo el técnico que creó el expediente o un administrador pueden modificarlo' });
     }
     
     // Solo se puede modificar si está en estado "En Registro"
@@ -105,15 +116,34 @@ const actualizarExpediente = async (req, res, next) => {
       return res.status(400).json({ error: 'Solo se pueden modificar expedientes en estado "En Registro"' });
     }
 
+    // Si se está cambiando el número de expediente, verificar que no exista otro con el mismo número
+    if (numero_expediente && numero_expediente !== expediente.numero_expediente) {
+      const duplicadoResult = await pool.request()
+        .input('numero_expediente', sql.VarChar, numero_expediente)
+        .input('id_expediente_actual', sql.Int, id)
+        .query(`
+          SELECT id_expediente 
+          FROM expediente 
+          WHERE numero_expediente = @numero_expediente 
+            AND id_expediente != @id_expediente_actual
+        `);
+
+      if (duplicadoResult.recordset.length > 0) {
+        return res.status(400).json({ error: 'Ya existe un expediente con ese número' });
+      }
+    }
+
     // Actualizar el expediente
     await pool.request()
       .input('id_expediente', sql.Int, id)
-      .input('descripcion_general', sql.Text, descripcion_general)
+      .input('numero_expediente', sql.VarChar, numero_expediente || expediente.numero_expediente)
+      .input('descripcion_general', sql.VarChar, descripcion_general)
       .input('fecha_incidente', sql.Date, fecha_incidente)
-      .input('lugar_incidente', sql.Text, lugar_incidente)
+      .input('lugar_incidente', sql.VarChar, lugar_incidente)
       .query(`
         UPDATE expediente 
-        SET descripcion_general = @descripcion_general,
+        SET numero_expediente = @numero_expediente,
+            descripcion_general = @descripcion_general,
             fecha_incidente = @fecha_incidente,
             lugar_incidente = @lugar_incidente,
             fecha_modificacion = GETDATE()

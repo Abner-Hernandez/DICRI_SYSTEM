@@ -28,6 +28,7 @@ router.get('/:id', authenticateToken, obtenerExpediente);
 router.put('/:id', [
   authenticateToken,
   authorizeRoles('Técnico', 'Administrador'),
+  body('numero_expediente').optional().notEmpty().withMessage('Número de expediente no puede estar vacío'),
   body('descripcion_general').optional().notEmpty().withMessage('Descripción no puede estar vacía'),
   body('fecha_incidente').optional().isISO8601().withMessage('Fecha de incidente debe ser válida'),
   body('lugar_incidente').optional().notEmpty().withMessage('Lugar de incidente no puede estar vacío'),
@@ -44,18 +45,27 @@ router.delete('/:id', [
 const { 
   listarIndiciosPorExpediente, 
   crearIndicio, 
-  obtenerTiposIndicio 
+  obtenerTiposIndicio,
+  obtenerSiguienteNumeroIndicio
 } = require('../controllers/indicioController');
 
 router.get('/:id_expediente/indicios', authenticateToken, listarIndiciosPorExpediente);
+
+router.get('/:id_expediente/indicios/siguiente-numero', authenticateToken, obtenerSiguienteNumeroIndicio);
 
 router.post('/:id_expediente/indicios', [
   authenticateToken,
   authorizeRoles('Técnico', 'Administrador'),
   body('numero_indicio').notEmpty().withMessage('Número de indicio requerido'),
+  body('nombre_objeto').notEmpty().withMessage('Nombre del objeto requerido'),
   body('descripcion').notEmpty().withMessage('Descripción requerida'),
-  body('id_tipo').isInt().withMessage('Tipo de indicio requerido'),
   body('ubicacion_hallazgo').notEmpty().withMessage('Ubicación de hallazgo requerida'),
+  body('id_tipo_indicio').optional().isInt().withMessage('Tipo de indicio debe ser un número válido'),
+  body('color').optional().isString().withMessage('Color debe ser texto'),
+  body('tamanio').optional().isString().withMessage('Tamaño debe ser texto'),
+  body('peso').optional().isNumeric().withMessage('Peso debe ser numérico'),
+  body('unidad_peso').optional().isString().withMessage('Unidad de peso debe ser texto'),
+  body('observaciones').optional().isString().withMessage('Observaciones debe ser texto'),
   validateRequest
 ], crearIndicio);
 

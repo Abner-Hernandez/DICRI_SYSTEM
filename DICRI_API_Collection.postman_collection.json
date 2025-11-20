@@ -423,6 +423,26 @@
 						},
 						"description": "Rechaza un expediente en revisión. Solo coordinadores pueden rechazar."
 					}
+				},
+				{
+					"name": "Obtener Historial de Expediente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/expedientes/{{expediente_id}}/historial",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"expedientes",
+								"{{expediente_id}}",
+								"historial"
+							]
+						},
+						"description": "Obtiene el historial de cambios de estado de un expediente específico."
+					}
 				}
 			],
 			"description": "Gestión completa de expedientes - CRUD, workflow de aprobación"
@@ -456,7 +476,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"numero_indicio\": \"IND-{{$randomInt}}\",\n    \"descripcion\": \"Teléfono móvil Samsung Galaxy S21 utilizado para realizar las transacciones fraudulentas. Contiene evidencia digital de conversaciones y aplicaciones bancarias.\",\n    \"id_tipo\": 2,\n    \"ubicacion_hallazgo\": \"Domicilio del sospechoso, 15 Avenida 8-45 Zona 10\",\n    \"color\": \"Negro\",\n    \"tamanio\": \"15.7 x 7.1 x 0.79 cm\",\n    \"peso\": 169.0\n}"
+							"raw": "{\n    \"numero_indicio\": \"IND-{{$randomInt}}\",\n    \"nombre_objeto\": \"Teléfono móvil Samsung Galaxy S21\",\n    \"descripcion\": \"Teléfono móvil Samsung Galaxy S21 utilizado para realizar las transacciones fraudulentas. Contiene evidencia digital de conversaciones y aplicaciones bancarias.\",\n    \"id_tipo_indicio\": 2,\n    \"ubicacion_hallazgo\": \"Domicilio del sospechoso, 15 Avenida 8-45 Zona 10\",\n    \"color\": \"Negro\",\n    \"tamanio\": \"15.7 x 7.1 x 0.79 cm\",\n    \"peso\": 169.0,\n    \"unidad_peso\": \"gramos\",\n    \"observaciones\": \"Dispositivo encontrado encendido, se realizó imagen forense inmediatamente\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/expedientes/{{expediente_id}}/indicios",
@@ -524,7 +544,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"descripcion\": \"Teléfono móvil Samsung Galaxy S21 utilizado para realizar las transacciones fraudulentas - ACTUALIZADO. Análisis forense completado, se encontraron 15 aplicaciones bancarias y 200+ mensajes relacionados con el fraude.\",\n    \"estado_conservacion\": \"Bueno - Análisis completado\",\n    \"observaciones\": \"Dispositivo encontrado encendido. Imagen forense realizada exitosamente. Se extrajo información de WhatsApp, Telegram y aplicaciones bancarias. Batería reemplazada para preservación.\"\n}"
+							"raw": "{\n    \"nombre_objeto\": \"Teléfono móvil Samsung Galaxy S21 - Analizado\",\n    \"descripcion\": \"Teléfono móvil Samsung Galaxy S21 utilizado para realizar las transacciones fraudulentas - ACTUALIZADO. Análisis forense completado, se encontraron 15 aplicaciones bancarias y 200+ mensajes relacionados con el fraude.\",\n    \"ubicacion_hallazgo\": \"Domicilio del sospechoso, 15 Avenida 8-45 Zona 10\",\n    \"color\": \"Negro\",\n    \"tamanio\": \"15.7 x 7.1 x 0.79 cm\",\n    \"peso\": 169.0,\n    \"unidad_peso\": \"gramos\",\n    \"observaciones\": \"Dispositivo encontrado encendido. Imagen forense realizada exitosamente. Se extrajo información de WhatsApp, Telegram y aplicaciones bancarias. Batería reemplazada para preservación.\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/indicios/{{indicio_id}}",
@@ -604,7 +624,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"numero_indicio\": \"IND-{{$randomInt}}\",\n    \"descripcion\": \"Computadora portátil Dell Inspiron 15 utilizada para crear las páginas de phishing y gestionar las cuentas fraudulentas.\",\n    \"id_tipo\": 2,\n    \"ubicacion_hallazgo\": \"Domicilio del sospechoso, escritorio principal\",\n    \"color\": \"Plateado\",\n    \"tamanio\": \"35.8 x 24.7 x 1.8 cm\",\n    \"peso\": 1650.0\n}"
+							"raw": "{\n    \"numero_indicio\": \"IND-{{$randomInt}}\",\n    \"nombre_objeto\": \"Computadora portátil Dell Inspiron 15\",\n    \"descripcion\": \"Computadora portátil Dell Inspiron 15 utilizada para crear las páginas de phishing y gestionar las cuentas fraudulentas.\",\n    \"id_tipo_indicio\": 2,\n    \"ubicacion_hallazgo\": \"Domicilio del sospechoso, escritorio principal\",\n    \"color\": \"Plateado\",\n    \"tamanio\": \"35.8 x 24.7 x 1.8 cm\",\n    \"peso\": 1650.0,\n    \"unidad_peso\": \"gramos\",\n    \"observaciones\": \"Equipo encontrado encendido con múltiples ventanas del navegador abiertas\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/expedientes/{{expediente_id}}/indicios",

@@ -21,7 +21,9 @@ import {
   ArrowBack as ArrowBackIcon,
   Edit as EditIcon,
   Add as AddIcon,
-  Send as SendIcon
+  Send as SendIcon,
+  Delete as DeleteIcon,
+  Visibility as VisibilityIcon
 } from '@mui/icons-material';
 
 interface Expediente {
@@ -43,9 +45,13 @@ interface Indicio {
   descripcion: string;
   tipo_evidencia: string;
   ubicacion_hallazgo: string;
-  fecha_recoleccion: string;
-  estado_conservacion: string;
+  fecha_registro_formatted: string;
+  tecnico_registro: string;
   observaciones: string;
+  color?: string;
+  tamanio?: string;
+  peso?: number;
+  unidad_peso?: string;
 }
 
 const DetalleExpediente: React.FC = () => {
@@ -147,6 +153,36 @@ const DetalleExpediente: React.FC = () => {
 
       alert('Expediente enviado a revisión exitosamente');
       cargarExpediente(); // Recargar para actualizar el estado
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
+  const eliminarIndicio = async (idIndicio: number, numeroIndicio: string) => {
+    if (!window.confirm(`¿Está seguro de que desea eliminar el indicio ${numeroIndicio}?`)) {
+      return;
+    }
+
+    try {
+      const token = sessionStorage.getItem('token');
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/indicios/${idIndicio}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al eliminar el indicio');
+      }
+
+      alert('Indicio eliminado exitosamente');
+      cargarIndicios(); // Recargar la lista de indicios
     } catch (err: any) {
       alert(err.message);
     }
@@ -345,13 +381,15 @@ const DetalleExpediente: React.FC = () => {
                   <TableCell>Número</TableCell>
                   <TableCell>Descripción</TableCell>
                   <TableCell>Tipo</TableCell>
-                  <TableCell>Ubicación</TableCell>
-                  <TableCell>Fecha Recolección</TableCell>
-                  <TableCell>Estado</TableCell>
+                  <TableCell>Color</TableCell>
+                  <TableCell>Peso</TableCell>
+                  <TableCell>Fecha de Registro</TableCell>
+                  <TableCell>Usuario de Registro</TableCell>
+                  <TableCell align="center" sx={{ minWidth: '140px' }}>Acciones</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {indicios.map((indicio) => (
+                {indicios.map((indicio: Indicio) => (
                   <TableRow key={indicio.id_indicio}>
                     <TableCell>{indicio.numero_indicio}</TableCell>
                     <TableCell>
@@ -360,15 +398,51 @@ const DetalleExpediente: React.FC = () => {
                       </Typography>
                     </TableCell>
                     <TableCell>{indicio.tipo_evidencia}</TableCell>
+                    <TableCell>{indicio.color || '-'}</TableCell>
                     <TableCell>
-                      <Typography variant="body2" noWrap>
-                        {indicio.ubicacion_hallazgo.substring(0, 30)}...
-                      </Typography>
+                      {indicio.peso ? `${indicio.peso} ${indicio.unidad_peso || 'g'}` : '-'}
                     </TableCell>
                     <TableCell>
-                      {new Date(indicio.fecha_recoleccion).toLocaleDateString()}
+                      {indicio.fecha_registro_formatted || '-'}
                     </TableCell>
-                    <TableCell>{indicio.estado_conservacion}</TableCell>
+                    <TableCell>{indicio.tecnico_registro}</TableCell>
+                    <TableCell align="center">
+                      <Stack direction="row" spacing={1} justifyContent="center">
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          startIcon={<VisibilityIcon />}
+                          onClick={() => navigate(`/expedientes/${id}/indicios/${indicio.id_indicio}`)}
+                          sx={{ minWidth: 'auto' }}
+                        >
+                          Ver
+                        </Button>
+                        {expediente?.estado === 'En Registro' && (
+                          <>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              color="primary"
+                              startIcon={<EditIcon />}
+                              onClick={() => navigate(`/expedientes/${id}/indicios/${indicio.id_indicio}/editar`)}
+                              sx={{ minWidth: 'auto' }}
+                            >
+                              Editar
+                            </Button>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              color="error"
+                              startIcon={<DeleteIcon />}
+                              onClick={() => eliminarIndicio(indicio.id_indicio, indicio.numero_indicio)}
+                              sx={{ minWidth: 'auto' }}
+                            >
+                              Eliminar
+                            </Button>
+                          </>
+                        )}
+                      </Stack>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
