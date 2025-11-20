@@ -1,25 +1,20 @@
-import React, { useReducer, useCallback } from 'react';
+import React, { useReducer } from 'react';
 import UsuarioContext, { UsuarioContextValue, initialState } from '../context/usuarioContext';
 import { usuarioReducer } from '../reducers/usuarioReducer';
 import { ActionType } from "../types/actions";
 import Usuario from "../clases/usuario";
 
-const LOGIN_API_ENDPOINT = process.env.REACT_APP_LOGIN_URL;
+const LOGIN_API_ENDPOINT = "http://localhost:5000";
 
-const UsuarioProvider = ({ children }: { children: React.ReactNode }) => {
+function UsuarioProvider({ children }: { children: React.ReactNode }) {
+    console.log("=== UsuarioProvider SE ESTÁ EJECUTANDO ===");
+    
     const [state, defaultDispatch] = useReducer(usuarioReducer, initialState);
-
-    const dispatch: React.Dispatch<ActionType> = useCallback(async (action) => {
-        
-        defaultDispatch(action); 
+    
+    const dispatch = async (action: ActionType) => {
         if (action.type === 'conectarse') {
             try {
-                if (!LOGIN_API_ENDPOINT) {
-                    console.error("Error de configuración: La URL de la API de Login no está definida en las variables de entorno.");
-                    return; 
-                }
-                
-                const response = await fetch(LOGIN_API_ENDPOINT, { 
+                const response = await fetch(LOGIN_API_ENDPOINT + "/api/auth/login", { 
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -27,13 +22,13 @@ const UsuarioProvider = ({ children }: { children: React.ReactNode }) => {
                     body: JSON.stringify({ 
                         email: action.correoElectronico,
                         password: action.password
-                }),
+                    }),
                 });
-
+                
                 if (!response.ok) {
-                    throw new Error('Error de autenticación. Credenciales inválidas o error del servidor.');
+                    throw new Error('Error de autenticación');
                 }
-
+                
                 const data = await response.json();
                 
                 const usuarioData: Usuario = {
@@ -41,29 +36,32 @@ const UsuarioProvider = ({ children }: { children: React.ReactNode }) => {
                     conectado: true,
                     activo: true,
                 };
-
+                
                 defaultDispatch({ 
                     type: 'iniciar_sesion_exitoso', 
                     payload: usuarioData 
                 });
-
+                
             } catch (error) {
-                console.error("Fallo la conexión o la autenticación:", error);
+                console.error("Fallo la conexión:", error);
             }
+        } else {
+            defaultDispatch(action);
         }
-        
-    }, [defaultDispatch]);
+    };
 
     const contextValue: UsuarioContextValue = {
         state,
         dispatch,
     };
 
+    console.log("Provider renderizando con value:", contextValue);
+
     return (
         <UsuarioContext.Provider value={contextValue}>
             {children}
         </UsuarioContext.Provider>
     );
-};
+}
 
 export default UsuarioProvider;

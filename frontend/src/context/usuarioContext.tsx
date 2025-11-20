@@ -16,14 +16,16 @@ export const initialState: Usuario = new Usuario(
     []            // permisos
 );
 
+export type AsyncDispatch = (action: ActionType) => Promise<void> | void;
+
 export interface UsuarioContextValue {
     state: Usuario;
-    dispatch: React.Dispatch<ActionType>; 
+    dispatch: AsyncDispatch;
 }
 
 const UsuarioContext = React.createContext<UsuarioContextValue>({
     state: initialState,
-    dispatch: () => {} 
+    dispatch: async () => {}
 });
 
 export { UsuarioContext as default };
