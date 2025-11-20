@@ -155,7 +155,7 @@ const CrearUsuario: React.FC = () => {
             password: data.password,
             id_rol: rolInfo.id,
             // Aquí enviamos el nombre del rol como string.
-            rol_nombre: rolInfo.nombre, 
+            rol: rolInfo.nombre, 
         });
         
         let usuarios: Usuario[] = JSON.parse(localStorage.getItem("usuarios") as string) || [];

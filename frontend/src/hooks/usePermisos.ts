@@ -24,7 +24,7 @@ const usePermisos = () => {
     return { 
         tienePermiso, 
         permisos: usuarioState.permisos,
-        rol: usuarioState.rol_nombre
+        rol: usuarioState.rol
     };
 };
 

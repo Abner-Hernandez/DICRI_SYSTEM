@@ -74,17 +74,19 @@ INSERT INTO usuario (nombre, apellido, email, password_hash, id_rol) VALUES
  (SELECT id_rol FROM rol WHERE nombre = 'Coordinador'));
 GO
 
--- opciones de menú
+-- Opciones de menú: Se modifican para incluir 'nombre_componente'
 
 USE DICRI_DB;
 GO
 
-INSERT INTO opcion_menu (nombre, ruta, icono, id_opcion_padre, orden, activo, requiere_permiso) VALUES
-('Inicio', '/inicio', 'HomeIcon', NULL, 1, 1, 0),
-('Expedientes', NULL, 'FolderIcon', NULL, 2, 1, 0),
-('Reportes', NULL, 'AssessmentIcon', NULL, 3, 1, 0),
-('Administración', NULL, 'SettingsIcon', NULL, 4, 1, 1),
-('Auditoría', '/auditoria', 'HistoryIcon', NULL, 5, 1, 1);
+-- 1. Insertar opciones raíz (incluyendo nombre_componente)
+-- Nota: 'Inicio' y 'Expedientes' son contenedores, 'Auditoría' es navegable.
+INSERT INTO opcion_menu (nombre, ruta, icono, id_opcion_padre, orden, activo, requiere_permiso, nombre_componente) VALUES
+('Inicio', '/inicio', 'HomeIcon', NULL, 1, 1, 0, 'ExpedientesLista'),
+('Expedientes', NULL, 'FolderIcon', NULL, 2, 1, 0, NULL),
+('Reportes', NULL, 'AssessmentIcon', NULL, 3, 1, 0, NULL),
+('Administración', NULL, 'SettingsIcon', NULL, 4, 1, 1, NULL),
+('Auditoría', '/auditoria', 'HistoryIcon', NULL, 5, 1, 1, 'AuditoriaLista');
 GO
 
 DECLARE @id_expedientes INT, @id_reportes INT, @id_admin INT;
@@ -93,23 +95,28 @@ SELECT @id_expedientes = id_opcion FROM opcion_menu WHERE nombre = 'Expedientes'
 SELECT @id_reportes = id_opcion FROM opcion_menu WHERE nombre = 'Reportes';
 SELECT @id_admin = id_opcion FROM opcion_menu WHERE nombre = 'Administración';
 
-INSERT INTO opcion_menu (nombre, ruta, icono, id_opcion_padre, orden, activo, requiere_permiso) VALUES
-('Nuevo Expediente', '/expedientes/nuevo', 'AddIcon', @id_expedientes, 1, 1, 1),
-('Mis Expedientes', '/expedientes/mis-expedientes', 'ListIcon', @id_expedientes, 2, 1, 1),
-('En Revisión', '/expedientes/revision', 'RateReviewIcon', @id_expedientes, 3, 1, 1),
-('Todos los Expedientes', '/expedientes/todos', 'ViewListIcon', @id_expedientes, 4, 1, 1),
-('Expedientes Aprobados', '/expedientes/aprobados', 'CheckCircleIcon', @id_expedientes, 5, 1, 1);
+-- 2. Insertar sub-opciones de Expedientes (incluyendo nombre_componente)
+INSERT INTO opcion_menu (nombre, ruta, icono, id_opcion_padre, orden, activo, requiere_permiso, nombre_componente) VALUES
+('Nuevo Expediente', '/expedientes/nuevo', 'AddIcon', @id_expedientes, 1, 1, 1, 'NuevoExpediente'),
+('Mis Expedientes', '/expedientes/mis-expedientes', 'ListIcon', @id_expedientes, 2, 1, 1, 'ExpedientesLista'),
+('En Revisión', '/expedientes/revision', 'RateReviewIcon', @id_expedientes, 3, 1, 1, 'ExpedientesLista'),
+('Todos los Expedientes', '/expedientes/todos', 'ViewListIcon', @id_expedientes, 4, 1, 1, 'ExpedientesLista'),
+('Expedientes Aprobados', '/expedientes/aprobados', 'CheckCircleIcon', @id_expedientes, 5, 1, 1, 'ExpedientesLista');
 
-INSERT INTO opcion_menu (nombre, ruta, icono, id_opcion_padre, orden, activo, requiere_permiso) VALUES
-('Reporte de Expedientes', '/reportes/expedientes', 'DescriptionIcon', @id_reportes, 1, 1, 1),
-('Estadísticas', '/reportes/estadisticas', 'BarChartIcon', @id_reportes, 2, 1, 1),
-('Reporte de Indicios', '/reportes/indicios', 'BallotIcon', @id_reportes, 3, 1, 1);
+-- 3. Insertar sub-opciones de Reportes (incluyendo nombre_componente)
+INSERT INTO opcion_menu (nombre, ruta, icono, id_opcion_padre, orden, activo, requiere_permiso, nombre_componente) VALUES
+('Reporte de Expedientes', '/reportes/expedientes', 'DescriptionIcon', @id_reportes, 1, 1, 1, 'ReporteExpedientes'),
+('Estadísticas', '/reportes/estadisticas', 'BarChartIcon', @id_reportes, 2, 1, 1, 'ReporteEstadisticas'),
+('Reporte de Indicios', '/reportes/indicios', 'BallotIcon', @id_reportes, 3, 1, 1, 'ReporteIndicios');
 
-INSERT INTO opcion_menu (nombre, ruta, icono, id_opcion_padre, orden, activo, requiere_permiso) VALUES
-('Usuarios', '/admin/usuarios', 'PeopleIcon', @id_admin, 1, 1, 1),
-('Roles y Permisos', '/admin/roles', 'SecurityIcon', @id_admin, 2, 1, 1),
-('Tipos de Indicio', '/admin/tipos-indicio', 'CategoryIcon', @id_admin, 3, 1, 1);
+-- 4. Insertar sub-opciones de Administración (incluyendo nombre_componente)
+INSERT INTO opcion_menu (nombre, ruta, icono, id_opcion_padre, orden, activo, requiere_permiso, nombre_componente) VALUES
+('Usuarios', '/admin/usuarios', 'PeopleIcon', @id_admin, 1, 1, 1, 'UsuariosGestion'), -- Cambiado de CrearUsuario a UsuariosGestion
+('Roles y Permisos', '/admin/roles', 'SecurityIcon', @id_admin, 2, 1, 1, 'RolesPermisos'),
+('Tipos de Indicio', '/admin/tipos-indicio', 'CategoryIcon', @id_admin, 3, 1, 1, 'TiposIndicio');
 GO
+
+-- Permisos de menú (iguales que antes)
 
 INSERT INTO permiso (nombre, descripcion, modulo) VALUES
 ('ver_menu_expedientes', 'Ver menú de expedientes', 'Menu'),

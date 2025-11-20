@@ -19,6 +19,7 @@ const obtenerMenuUsuario = async (req, res, next) => {
           nombre: item.nombre,
           ruta: item.ruta,
           icono: item.icono,
+          componente: item.nombre_componente,
           incluyeEnMenu: item.ruta !== null,
           items: construirArbol(items, item.id_opcion)
         }));

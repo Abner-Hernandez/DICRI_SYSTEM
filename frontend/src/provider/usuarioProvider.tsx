@@ -13,7 +13,7 @@ const getUsuarioFromStorage = (): Usuario => {
             sessionStorage.getItem('apellido') || '',
             sessionStorage.getItem('email') || '',
             0, // id_rol no se guarda en sessionStorage
-            sessionStorage.getItem('rol_nombre') || '',
+            sessionStorage.getItem('rol') || '',
             true,
             true,
             null, // id_usuario no se guarda en sessionStorage

@@ -184,6 +184,7 @@ const Menu: React.FC = () => {
             }
 
             const data = await response.json();
+            usuario.dispatch({ type: "establecerMenu", payload: data.menu });
             setItems(obtenerMenus(data.menu));
         } catch (error) {
             console.error('Error cargando menú:', error);
@@ -254,7 +255,7 @@ const Menu: React.FC = () => {
 
                     {usuario.state && (
                         <Typography variant="body2" sx={{ mr: 2 }}>
-                            {usuario.state.nombre} ({usuario.state.rol_nombre})
+                            {usuario.state.nombre} ({usuario.state.rol})
                         </Typography>
                     )}
 

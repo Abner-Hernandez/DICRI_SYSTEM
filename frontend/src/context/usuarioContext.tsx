@@ -2,14 +2,14 @@ import React from "react";
 import Usuario from "../clases/usuario";
 import { ActionType } from "../types/actions";
 
-type RolNombre = string;
+type rol = string;
 
 export const initialState: Usuario = new Usuario(
     '',           // nombre
     '',           // apellido
     '',           // email
     0,            // id_rol
-    'Sin Rol' as RolNombre, // rol_nombre
+    'Sin Rol' as rol, // rol_nombre
     false,        // conectado
     true,         // activo
     null,         // id_usuario

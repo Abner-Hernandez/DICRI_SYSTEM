@@ -5,7 +5,7 @@ const guardarSesion = (usuario: Usuario, token?: string) => {
     sessionStorage.setItem("nombre", usuario.nombre);
     sessionStorage.setItem("email", usuario.email); 
     sessionStorage.setItem("conectado", usuario.conectado.toString());
-    sessionStorage.setItem("rol_nombre", usuario.rol_nombre);
+    sessionStorage.setItem("rol", usuario.rol);
     if (token) {
         sessionStorage.setItem("token", token);
     }
@@ -15,7 +15,7 @@ const limpiarSesion = () => {
     sessionStorage.removeItem("nombre");
     sessionStorage.removeItem("email");
     sessionStorage.removeItem("conectado");
-    sessionStorage.removeItem("rol_nombre");
+    sessionStorage.removeItem("rol");
     sessionStorage.removeItem("token");
 }
 
@@ -44,6 +44,12 @@ export const usuarioReducer: UsuarioReducer = (state: Usuario, action: ActionTyp
             }
             return nuevoEstado;
         }
+        
+        case 'establecerMenu':
+            return {
+                ...state,
+                menuItems: action.payload,
+            };
         case 'crear_usuario':
         case 'conectarse':
         default:
