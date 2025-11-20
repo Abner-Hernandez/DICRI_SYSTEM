@@ -4,38 +4,27 @@ import Login from '../componentes/login';
 import CrearUsuario from '../componentes/crearUsuario';
 import UsuarioContext from '../context/usuarioContext';
 import MenuAtel from '../Navbar/menuAtel';
-import { useIdleTimer } from 'react-idle-timer'
+import IdleTimerWrapper from '../componentes/IdleTimerWrapper';
 
 const AppRouter = () => {
-    const { state, dispatch } = useContext(UsuarioContext);
-    
-    const onIdle = () => {
-        if(state.conectado){
-            dispatch({type: "desconectarse"})
-        }
-    }
-    
-    const { getRemainingTime } = useIdleTimer({
-        onIdle,
-        timeout: 1000 * 60 * 2,
-        throttle: 500,
-    });
+    const { state } = useContext(UsuarioContext);
 
     return (
         <BrowserRouter>
-            {/* NO envuelvas en Provider aquí */}
-            {state.conectado && <MenuAtel />}
-            
-            <Routes>
-                <Route path="/ingreso" element={<Login />} />
-                <Route path="/crear-usuario" element={<CrearUsuario />} />
-                <Route path="/inicio" element={<h1>Página de Inicio</h1>} />
-                <Route path="/acceso-denegado" element={<h1>Acceso Denegado</h1>} />
-                <Route 
-                    path="*" 
-                    element={<Navigate to={state.conectado ? "/inicio" : "/ingreso"} />} 
-                />
-            </Routes>
+            <IdleTimerWrapper> 
+                {state.conectado && <MenuAtel />}
+                
+                <Routes>
+                    <Route path="/ingreso" element={<Login />} />
+                    <Route path="/crear-usuario" element={<CrearUsuario />} />
+                    <Route path="/inicio" element={<h1>Página de Inicio</h1>} />
+                    <Route path="/acceso-denegado" element={<h1>Acceso Denegado</h1>} />
+                    <Route 
+                        path="*" 
+                        element={<Navigate to={state.conectado ? "/inicio" : "/ingreso"} />} 
+                    />
+                </Routes>
+            </IdleTimerWrapper>
         </BrowserRouter>
     )
 }
