@@ -98,10 +98,10 @@ SELECT @id_admin = id_opcion FROM opcion_menu WHERE nombre = 'Administración';
 -- 2. Insertar sub-opciones de Expedientes (incluyendo nombre_componente)
 INSERT INTO opcion_menu (nombre, ruta, icono, id_opcion_padre, orden, activo, requiere_permiso, nombre_componente) VALUES
 ('Nuevo Expediente', '/expedientes/nuevo', 'AddIcon', @id_expedientes, 1, 1, 1, 'NuevoExpediente'),
-('Mis Expedientes', '/expedientes/mis-expedientes', 'ListIcon', @id_expedientes, 2, 1, 1, 'ExpedientesLista'),
-('En Revisión', '/expedientes/revision', 'RateReviewIcon', @id_expedientes, 3, 1, 1, 'ExpedientesLista'),
+('Mis Expedientes', '/expedientes/mis-expedientes', 'ListIcon', @id_expedientes, 2, 0, 1, 'ExpedientesLista'),
+('En Revisión', '/expedientes/revision', 'RateReviewIcon', @id_expedientes, 3, 1, 0, 'ExpedientesLista'),
 ('Todos los Expedientes', '/expedientes/todos', 'ViewListIcon', @id_expedientes, 4, 1, 1, 'ExpedientesLista'),
-('Expedientes Aprobados', '/expedientes/aprobados', 'CheckCircleIcon', @id_expedientes, 5, 1, 1, 'ExpedientesLista');
+('Expedientes Aprobados', '/expedientes/aprobados', 'CheckCircleIcon', @id_expedientes, 5, 0, 1, 'ExpedientesLista');
 
 -- 3. Insertar sub-opciones de Reportes (incluyendo nombre_componente)
 INSERT INTO opcion_menu (nombre, ruta, icono, id_opcion_padre, orden, activo, requiere_permiso, nombre_componente) VALUES
