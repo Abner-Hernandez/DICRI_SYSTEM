@@ -2,8 +2,8 @@
 ## Sistema de Gestión de Evidencia Criminalística DICRI
 
 **Versión:** 1.0  
-**Fecha:** Noviembre 2024  
-**Autor:** Equipo de Desarrollo DICRI
+**Fecha:** Noviembre 2025  
+**Autor:** Abner-Hernandez
 
 ---
 
