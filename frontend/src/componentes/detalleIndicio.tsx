@@ -18,15 +18,14 @@ import {
 interface Indicio {
   id_indicio: number;
   numero_indicio: string;
-  nombre_objeto?: string;
+  nombre_objeto: string;
   descripcion: string;
   tipo_evidencia: string;
   ubicacion_hallazgo: string;
-  fecha_recoleccion: string;
-  estado_conservacion: string;
-  observaciones: string;
   fecha_registro: string;
-  tecnico_registro: string;
+  fecha_registro_formatted?: string;
+  tecnico_registro?: string;
+  observaciones: string;
   color?: string;
   tamanio?: string;
   peso?: number;
@@ -176,125 +175,141 @@ const DetalleIndicio: React.FC = () => {
         
         <Divider sx={{ mb: 3 }} />
         
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-          <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
-            <Typography variant="subtitle2" color="textSecondary">
-              Número de Indicio
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              {indicio.numero_indicio}
-            </Typography>
+        <Stack spacing={3}>
+          {/* Primera fila: Número de Indicio y Nombre del Objeto */}
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
+              <Typography variant="subtitle2" color="textSecondary">
+                Número de Indicio
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                {indicio.numero_indicio}
+              </Typography>
+            </Box>
 
-            {indicio.nombre_objeto && (
-              <>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Nombre del Objeto
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  {indicio.nombre_objeto}
-                </Typography>
-              </>
-            )}
-
-            <Typography variant="subtitle2" color="textSecondary">
-              Tipo de Evidencia
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              {indicio.tipo_evidencia}
-            </Typography>
-
-            <Typography variant="subtitle2" color="textSecondary">
-              Estado de Conservación
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              {indicio.estado_conservacion}
-            </Typography>
-
-            {indicio.color && (
-              <>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Color
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  {indicio.color}
-                </Typography>
-              </>
-            )}
+            <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
+              <Typography variant="subtitle2" color="textSecondary">
+                Nombre del Objeto
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                {indicio.nombre_objeto || 'No disponible'}
+              </Typography>
+            </Box>
           </Box>
 
-          <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
-            <Typography variant="subtitle2" color="textSecondary">
-              Fecha de Recolección
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              {new Date(indicio.fecha_recoleccion).toLocaleDateString()}
-            </Typography>
-
-            <Typography variant="subtitle2" color="textSecondary">
-              Fecha de Registro
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              {new Date(indicio.fecha_registro).toLocaleDateString()}
-            </Typography>
-
-            <Typography variant="subtitle2" color="textSecondary">
-              Técnico de Registro
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              {indicio.tecnico_registro || 'No disponible'}
-            </Typography>
-
-            {indicio.tamanio && (
-              <>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Tamaño
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  {indicio.tamanio}
-                </Typography>
-              </>
-            )}
-
-            {indicio.peso && (
-              <>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Peso
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  {indicio.peso} {indicio.unidad_peso || 'gramos'}
-                </Typography>
-              </>
-            )}
-          </Box>
-
-          <Box sx={{ width: '100%' }}>
+          {/* Descripción */}
+          <Box>
             <Typography variant="subtitle2" color="textSecondary">
               Descripción
             </Typography>
             <Typography variant="body1" gutterBottom>
               {indicio.descripcion}
             </Typography>
+          </Box>
 
+          {/* Tipo de Evidencia */}
+          <Box>
+            <Typography variant="subtitle2" color="textSecondary">
+              Tipo de Evidencia
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              {indicio.tipo_evidencia}
+            </Typography>
+          </Box>
+
+          {/* Segunda fila: Color y Tamaño */}
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            {indicio.color && (
+              <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
+                <Typography variant="subtitle2" color="textSecondary">
+                  Color
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  {indicio.color}
+                </Typography>
+              </Box>
+            )}
+
+            {indicio.tamanio && (
+              <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
+                <Typography variant="subtitle2" color="textSecondary">
+                  Tamaño
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  {indicio.tamanio}
+                </Typography>
+              </Box>
+            )}
+          </Box>
+
+          {/* Tercera fila: Peso y Unidad de Peso */}
+          {indicio.peso && (
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <Box sx={{ flex: '1 1 250px', minWidth: '250px' }}>
+                <Typography variant="subtitle2" color="textSecondary">
+                  Peso
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  {indicio.peso} {indicio.unidad_peso || 'gramos'}
+                </Typography>
+              </Box>
+            </Box>
+          )}
+
+          {/* Ubicación del Hallazgo */}
+          <Box>
             <Typography variant="subtitle2" color="textSecondary">
               Ubicación del Hallazgo
             </Typography>
             <Typography variant="body1" gutterBottom>
               {indicio.ubicacion_hallazgo}
             </Typography>
-
-            {indicio.observaciones && (
-              <>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Observaciones
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  {indicio.observaciones}
-                </Typography>
-              </>
-            )}
           </Box>
-        </Box>
+
+          {/* Fecha y Técnico de Registro */}
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
+              <Typography variant="subtitle2" color="textSecondary">
+                Fecha de Registro
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                {indicio.fecha_registro_formatted || new Date(indicio.fecha_registro).toLocaleDateString()}
+              </Typography>
+            </Box>
+
+            <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
+              <Typography variant="subtitle2" color="textSecondary">
+                Técnico de Registro
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                {indicio.tecnico_registro || 'No disponible'}
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* Observaciones */}
+          {indicio.observaciones && (
+            <Box>
+              <Typography variant="subtitle2" color="textSecondary">
+                Observaciones
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                {indicio.observaciones}
+              </Typography>
+            </Box>
+          )}
+        </Stack>
       </Paper>
+
+      {/* Información adicional */}
+      <Box mt={2}>
+        <Alert severity="info">
+          <Typography variant="body2">
+            <strong>Nota:</strong> Los indicios solo pueden ser editados cuando el expediente está en estado "En Registro". 
+            El número de indicio, la fecha de registro y el técnico de registro no se pueden modificar una vez creados.
+          </Typography>
+        </Alert>
+      </Box>
     </Box>
   );
 };

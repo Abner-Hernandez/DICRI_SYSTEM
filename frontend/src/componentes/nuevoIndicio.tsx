@@ -32,12 +32,10 @@ const NuevoIndicio: React.FC = () => {
     descripcion: '',
     tipo_evidencia: '',
     ubicacion_hallazgo: '',
-    fecha_recoleccion: '',
-    estado_conservacion: 'Bueno',
     observaciones: '',
     color: '',
     tamanio: '',
-    peso: '',
+    peso: '0',
     unidad_peso: 'gramos'
   });
 
@@ -50,14 +48,6 @@ const NuevoIndicio: React.FC = () => {
     'Fotográfica',
     'Audiovisual',
     'Otra'
-  ];
-
-  const estadosConservacion = [
-    'Excelente',
-    'Bueno',
-    'Regular',
-    'Malo',
-    'Deteriorado'
   ];
 
   const unidadesPeso = [
@@ -129,9 +119,29 @@ const NuevoIndicio: React.FC = () => {
       if (!indicio.descripcion.trim()) {
         throw new Error('La descripción es obligatoria');
       }
+      if (!indicio.tipo_evidencia.trim()) {
+        throw new Error('El tipo de evidencia es obligatorio');
+      }
       if (!indicio.ubicacion_hallazgo.trim()) {
         throw new Error('La ubicación del hallazgo es obligatoria');
       }
+      if (indicio.peso && parseFloat(indicio.peso) < 0) {
+        throw new Error('El peso debe ser mayor o igual a cero');
+      }
+
+      // Preparar datos para envío
+      const datosIndicio = {
+        numero_indicio: indicio.numero_indicio,
+        nombre_objeto: indicio.nombre_objeto,
+        descripcion: indicio.descripcion,
+        tipo_evidencia: indicio.tipo_evidencia,
+        ubicacion_hallazgo: indicio.ubicacion_hallazgo,
+        observaciones: indicio.observaciones,
+        color: indicio.color,
+        tamanio: indicio.tamanio,
+        peso: indicio.peso ? parseFloat(indicio.peso) : 0,
+        unidad_peso: indicio.unidad_peso
+      };
 
       const response = await fetch(
         `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/expedientes/${id}/indicios`,
@@ -141,7 +151,7 @@ const NuevoIndicio: React.FC = () => {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(indicio)
+          body: JSON.stringify(datosIndicio)
         }
       );
 
@@ -211,20 +221,6 @@ const NuevoIndicio: React.FC = () => {
               </Box>
 
               <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
-                <FormControl fullWidth required>
-                  <InputLabel>Tipo de Evidencia</InputLabel>
-                  <Select
-                    value={indicio.tipo_evidencia}
-                    label="Tipo de Evidencia"
-                    onChange={(e) => handleChange('tipo_evidencia', e.target.value)}
-                  >
-                    {tiposEvidencia.map((tipo) => (
-                      <MenuItem key={tipo} value={tipo}>
-                        {tipo}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
                 <TextField
                   fullWidth
                   label="Nombre del Objeto"
@@ -247,6 +243,22 @@ const NuevoIndicio: React.FC = () => {
               required
               helperText="Descripción detallada del indicio encontrado"
             />
+
+            {/* Tipo de Evidencia */}
+            <FormControl fullWidth required>
+              <InputLabel>Tipo de Evidencia</InputLabel>
+              <Select
+                value={indicio.tipo_evidencia}
+                label="Tipo de Evidencia"
+                onChange={(e) => handleChange('tipo_evidencia', e.target.value)}
+              >
+                {tiposEvidencia.map((tipo) => (
+                  <MenuItem key={tipo} value={tipo}>
+                    {tipo}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             {/* Segunda fila: Color y Tamaño */}
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
@@ -316,39 +328,7 @@ const NuevoIndicio: React.FC = () => {
               helperText="Ubicación exacta donde se encontró el indicio"
             />
 
-            {/* Cuarta fila: Fecha de Recolección y Estado de Conservación */}
-            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-              <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
-                <TextField
-                  fullWidth
-                  label="Fecha de Recolección"
-                  type="date"
-                  value={indicio.fecha_recoleccion}
-                  onChange={(e) => handleChange('fecha_recoleccion', e.target.value)}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  required
-                />
-              </Box>
 
-              <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
-                <FormControl fullWidth required>
-                  <InputLabel>Estado de Conservación</InputLabel>
-                  <Select
-                    value={indicio.estado_conservacion}
-                    label="Estado de Conservación"
-                    onChange={(e) => handleChange('estado_conservacion', e.target.value)}
-                  >
-                    {estadosConservacion.map((estado) => (
-                      <MenuItem key={estado} value={estado}>
-                        {estado}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-            </Box>
 
             {/* Observaciones */}
             <TextField
@@ -382,6 +362,16 @@ const NuevoIndicio: React.FC = () => {
           </Stack>
         </form>
       </Paper>
+
+      {/* Información adicional */}
+      <Box mt={2}>
+        <Alert severity="info">
+          <Typography variant="body2">
+            <strong>Nota:</strong> El número de indicio se genera automáticamente. 
+            Una vez creado, el número de indicio, la fecha de registro y el técnico de registro no se pueden modificar.
+          </Typography>
+        </Alert>
+      </Box>
     </Box>
   );
 };

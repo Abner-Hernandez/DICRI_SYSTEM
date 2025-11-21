@@ -55,7 +55,7 @@ const EditarIndicio: React.FC = () => {
     observaciones: '',
     color: '',
     tamanio: '',
-    peso: '',
+    peso: '0',
     unidad_peso: 'gramos'
   });
 
@@ -122,7 +122,7 @@ const EditarIndicio: React.FC = () => {
         observaciones: ind.observaciones || '',
         color: ind.color || '',
         tamanio: ind.tamanio || '',
-        peso: ind.peso ? ind.peso.toString() : '',
+        peso: ind.peso ? ind.peso.toString() : '0',
         unidad_peso: ind.unidad_peso || 'gramos'
       });
     } catch (err: any) {
@@ -164,6 +164,9 @@ const EditarIndicio: React.FC = () => {
       if (!indicio.ubicacion_hallazgo.trim()) {
         throw new Error('La ubicación del hallazgo es obligatoria');
       }
+      if (indicio.peso && parseFloat(indicio.peso) < 0) {
+        throw new Error('El peso debe ser mayor o igual a cero');
+      }
 
       // Preparar datos para envío
       const datosActualizacion = {
@@ -174,7 +177,7 @@ const EditarIndicio: React.FC = () => {
         observaciones: indicio.observaciones,
         color: indicio.color,
         tamanio: indicio.tamanio,
-        peso: indicio.peso ? parseFloat(indicio.peso) : null,
+        peso: indicio.peso ? parseFloat(indicio.peso) : 0,
         unidad_peso: indicio.unidad_peso
       };
 
