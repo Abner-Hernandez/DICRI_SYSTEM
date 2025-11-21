@@ -1,4 +1,4 @@
-# Proyecto Dicri
+# SISTEMA DICRI
 
 Este es un proyecto que consta de tres servicios principales: una base de datos, un backend y un frontend, todos ellos gestionados mediante Docker. El propósito de este proyecto es brindar una plataforma completa para la gestión, procesamiento y análisis de evidencia criminalística. 
 
@@ -103,3 +103,4 @@ Para ejecutar el proyecto, solo necesitas correr el siguiente comando en la raí
 ```bash
 docker-compose up --build
 ```
+
