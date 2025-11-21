@@ -13,6 +13,7 @@ import UsuarioContext from '../context/usuarioContext';
 import Menu from '../navbar/menu';
 import IdleTimerWrapper from '../componentes/IdleTimerWrapper';
 import ItemMenu from "../clases/itemMenu";
+import ReportesExpedientes from '../componentes/reportesExpedientes';
 
 const ComponentMap = {
     'ExpedientesLista': ExpedientesLista,
@@ -24,6 +25,7 @@ const ComponentMap = {
     'DetalleIndicio': DetalleIndicio,
     'EditarIndicio': EditarIndicio,
     'Login': Login,
+    'ReporteExpedientes': ReportesExpedientes,
 };
 
 // --- Tipos Agregados ---

@@ -20,6 +20,43 @@ const listarExpedientes = async (req, res, next) => {
   }
 };
 
+const listarExpedientesR = async (req, res, next) => {
+  try {
+    const pool = getPool();
+    const result = await pool.request().query(`
+      SELECT 
+        e.id_expediente, 
+        e.numero_expediente, 
+        e.descripcion_general,
+        e.fecha_registro, 
+        e.fecha_incidente, 
+        e.lugar_incidente,
+        est.nombre as estado,
+        u.nombre + ' ' + u.apellido as tecnico_registro,
+        (SELECT COUNT(*) FROM indicio i WHERE i.id_expediente = e.id_expediente) as total_indicios,
+        e.fecha_aprobacion,
+        CASE 
+          WHEN e.id_estado = (SELECT id_estado FROM estado_expediente WHERE nombre = 'Rechazado')
+          THEN (SELECT TOP 1 fecha_cambio FROM historial_expediente 
+                WHERE id_expediente = e.id_expediente 
+                AND id_estado_nuevo = (SELECT id_estado FROM estado_expediente WHERE nombre = 'Rechazado')
+                ORDER BY fecha_cambio DESC)
+          ELSE NULL
+        END as fecha_rechazo,
+        coord.nombre + ' ' + coord.apellido as coordinador
+      FROM expediente e
+      INNER JOIN estado_expediente est ON e.id_estado = est.id_estado
+      INNER JOIN usuario u ON e.id_usuario_registro = u.id_usuario
+      LEFT JOIN usuario coord ON e.id_usuario_aprobacion = coord.id_usuario
+      ORDER BY e.fecha_registro DESC
+    `);
+
+    res.json({ expedientes: result.recordset });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const crearExpediente = async (req, res, next) => {
   try {
     const { numero_expediente, descripcion_general, fecha_incidente, lugar_incidente } = req.body;
@@ -220,6 +257,7 @@ const eliminarExpediente = async (req, res, next) => {
 
 module.exports = { 
   listarExpedientes, 
+  listarExpedientesR, 
   crearExpediente, 
   obtenerExpediente, 
   actualizarExpediente, 

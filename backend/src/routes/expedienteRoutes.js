@@ -2,6 +2,7 @@ const express = require('express');
 const { body } = require('express-validator');
 const { 
   listarExpedientes, 
+  listarExpedientesR, 
   crearExpediente, 
   obtenerExpediente,
   actualizarExpediente,
@@ -13,6 +14,7 @@ const { validateRequest } = require('../middlewares/validationMiddleware');
 const router = express.Router();
 
 router.get('/', authenticateToken, listarExpedientes);
+router.get('/reportes', authenticateToken, listarExpedientesR);
 
 router.post('/', [
   authenticateToken,

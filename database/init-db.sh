@@ -10,6 +10,17 @@ DB_PASSWORD_APP="${DB_PASSWORD_APP}"
 DB_NAME="${DB_NAME}"
 DB_HOST="${DB_HOST:-localhost}"
 SQLCMD="/opt/mssql-tools/bin/sqlcmd"
+INIT_FLAG_FILE="/var/opt/mssql/.init_done"
+
+# -----------------------------------------------------------------
+# 0. VERIFICACIÓN DE BANDERA DE INICIALIZACIÓN
+# -----------------------------------------------------------------
+
+if [ -f "$INIT_FLAG_FILE" ]; then
+    echo "¡Base de datos ya inicializada! Omitiendo DDL, DML y asignación de permisos."
+    /opt/mssql/bin/sqlservr
+    exit 0
+fi
 
 echo "Esperando a que SQL Server esté listo..."
 
@@ -150,5 +161,13 @@ if [ $? -ne 0 ]; then
     echo "Error ejecutando DML.sql. Saliendo."
     exit 1
 fi
+
+echo "Base de datos ${DB_NAME} inicializada exitosamente!"
+
+# -----------------------------------------------------------------
+# 6. CREACIÓN DE ARCHIVO DE BANDERA (FLAG)
+# -----------------------------------------------------------------
+touch "$INIT_FLAG_FILE"
+echo "Archivo de bandera creado en $INIT_FLAG_FILE."
 
 echo "Base de datos ${DB_NAME} inicializada exitosamente!"

@@ -23,11 +23,8 @@ const getUsuarioFromStorage = (): Usuario => {
     return initialState;
 };
 
-function UsuarioProvider({ children }: { children: React.ReactNode }) {
-    console.log("=== UsuarioProvider SE ESTÁ EJECUTANDO ===");
-    
+function UsuarioProvider({ children }: { children: React.ReactNode }) {    
     const [state, defaultDispatch] = useReducer(usuarioReducer, getUsuarioFromStorage());
-    
     const dispatch = async (action: ActionType) => {
         if (action.type === 'conectarse') {
             try {
@@ -68,8 +65,6 @@ function UsuarioProvider({ children }: { children: React.ReactNode }) {
         state,
         dispatch,
     };
-
-    console.log("Provider renderizando con value:", contextValue);
 
     return (
         <UsuarioContext.Provider value={contextValue}>
