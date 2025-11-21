@@ -86,7 +86,7 @@ INSERT INTO opcion_menu (nombre, ruta, icono, id_opcion_padre, orden, activo, re
 ('Expedientes', NULL, 'FolderIcon', NULL, 2, 1, 0, NULL),
 ('Reportes', NULL, 'AssessmentIcon', NULL, 3, 1, 0, NULL),
 ('Administración', NULL, 'SettingsIcon', NULL, 4, 1, 1, NULL),
-('Auditoría', '/auditoria', 'HistoryIcon', NULL, 5, 1, 1, 'AuditoriaLista');
+('Auditoría', '/auditoria', 'HistoryIcon', NULL, 5, 0, 1, 'AuditoriaLista');
 GO
 
 DECLARE @id_expedientes INT, @id_reportes INT, @id_admin INT;
@@ -107,7 +107,7 @@ INSERT INTO opcion_menu (nombre, ruta, icono, id_opcion_padre, orden, activo, re
 INSERT INTO opcion_menu (nombre, ruta, icono, id_opcion_padre, orden, activo, requiere_permiso, nombre_componente) VALUES
 ('Reporte de Expedientes', '/reportes/expedientes', 'DescriptionIcon', @id_reportes, 1, 1, 1, 'ReporteExpedientes'),
 ('Estadísticas', '/reportes/estadisticas', 'BarChartIcon', @id_reportes, 2, 1, 1, 'ReporteEstadisticas'),
-('Reporte de Indicios', '/reportes/indicios', 'BallotIcon', @id_reportes, 3, 1, 1, 'ReporteIndicios');
+('Reporte de Indicios', '/reportes/indicios', 'BallotIcon', @id_reportes, 3, 0, 1, 'ReporteIndicios');
 
 -- 4. Insertar sub-opciones de Administración (incluyendo nombre_componente)
 INSERT INTO opcion_menu (nombre, ruta, icono, id_opcion_padre, orden, activo, requiere_permiso, nombre_componente) VALUES

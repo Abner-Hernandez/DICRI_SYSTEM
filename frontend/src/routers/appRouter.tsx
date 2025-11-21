@@ -14,6 +14,7 @@ import Menu from '../navbar/menu';
 import IdleTimerWrapper from '../componentes/IdleTimerWrapper';
 import ItemMenu from "../clases/itemMenu";
 import ReportesExpedientes from '../componentes/reportesExpedientes';
+import ReporteEstadisticas from '../componentes/reporteEstadisticas';
 
 const ComponentMap = {
     'ExpedientesLista': ExpedientesLista,
@@ -26,6 +27,7 @@ const ComponentMap = {
     'EditarIndicio': EditarIndicio,
     'Login': Login,
     'ReporteExpedientes': ReportesExpedientes,
+    'ReporteEstadisticas': ReporteEstadisticas
 };
 
 // --- Tipos Agregados ---
