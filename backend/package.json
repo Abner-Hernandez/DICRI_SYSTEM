@@ -34,15 +34,8 @@
     "supertest": "^6.3.3",
     "eslint": "^8.54.0",
     "@types/jest": "^29.5.10",
-    "jest-mock": "^29.7.0"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "coveragePathIgnorePatterns": ["/node_modules/"],
-    "testMatch": ["**/tests/**/*.test.js"],
-    "collectCoverageFrom": [
-      "src/**/*.js",
-      "!src/config/**"
-    ]
+    "jest-mock": "^29.7.0",
+    "test:watch": "jest --config=jest.config.js --watch",
+    "test": "jest --config=jest.config.js --coverage --runInBand"
   }
 }
