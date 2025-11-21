@@ -4,6 +4,8 @@ Este es un proyecto que consta de tres servicios principales: una base de datos,
 
 A continuación se detallan los servicios y cómo ejecutar el proyecto localmente.
 
+[Ver el manual técnico completo](Documentacion/manual-tecnico.md)
+
 ## Servicios
 
 ### 1. **Base de Datos (SQL Server)**
@@ -100,3 +102,4 @@ Para ejecutar el proyecto, solo necesitas correr el siguiente comando en la raí
 
 ```bash
 docker-compose up --build
+```
