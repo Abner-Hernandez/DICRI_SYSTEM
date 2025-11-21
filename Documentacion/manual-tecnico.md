@@ -211,9 +211,13 @@ Incluye tablas principales para usuarios, expedientes e indicios, así
 como procedimientos almacenados enfocados en validar permisos, gestionar
 flujos y registrar auditoría.
 
-------------------------------------------------------------------------
 
 ### 3.1 Modelo Entidad-Relación
+El modelo entidad-relación del sistema DICRI está diseñado para reflejar las relaciones entre las entidades principales, como usuarios, expedientes, permisos, indicios y más. Este modelo asegura la integridad y eficiencia en la gestión de los datos.
+
+Para visualizar el modelo completo de la base de datos, puedes acceder al diagrama en dbdiagram.io:
+
+[Ver diagrama de la base de datos en dbdiagram.io](https://dbdiagram.io/d/MP-691d08636735e11170716190)
 
 #### Tablas Principales:
 
